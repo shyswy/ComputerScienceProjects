@@ -1,0 +1,49 @@
+language: java
+jdk:
+  - openjdk11
+
+branches:
+  only:
+    - master
+
+cache:
+  directories:
+    - '$HOME/.m2/repository'
+    - '$HOME/.gradle'
+
+script: "./gradlew clean build"
+
+before_install:
+  - chmod +x gradlew
+
+before_deploy:
+  - zip -r course-registration-system *
+  - mkdir -p deploy
+  - mv course-registration-system.zip deploy/course-registration-system.zip
+
+deploy:
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    bucket: course-registration-build
+    region: ap-northeast-2
+    skip_cleanup: true
+    acl: private
+    local_dir: deploy
+    wait-until-deployed: true
+
+  - provider: codedeploy
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    bucket: course-registration-build
+    key: course-registration-system.zip
+    bundle_type: zip
+    application: course-registration-system
+    deployment_group: course-registration-system-group
+    region: ap-northeast-2
+    wait-until-deployed: true
+
+notifications:
+  email:
+    recipients:
+      - hsuk6032@gmail.com
