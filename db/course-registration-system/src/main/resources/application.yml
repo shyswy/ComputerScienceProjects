@@ -1,17 +1,12 @@
 spring:
 
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
 
-  datasource:   # 2 는 기본 인메모리 방식 . tcp 방식을 ㅐ줘야 정보 휘발 x crud 가 올바르게 h2 콘솔에 반영된다.
-    url: jdbc:h2:tcp://localhost/~/test # test 부분을 자신이 원하는 것으로 바꾸시면 됩니다.
-    username: sa # username과 password는 자신의 설정에 맞게
-    password:
-    driver-class-name: org.h2.Driver
-    data: classpath:import.sql
-    initialization-mode: always
+
+  datasource: #디폴트인 h2 는 별도 설정없어도 된다.
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/registdb?serverTimezone=Asia/Seoul
+    username: root
+    password: root
 
   jpa:
     hibernate:
