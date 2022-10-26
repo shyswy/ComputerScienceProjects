@@ -15,7 +15,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update   # 이거 안하면 cread and drop 으로 만들고 서버 내려가면 테이블도 내려감
+      ddl-auto: update  #기본 create and drop, update(db 유지) create: 테이블이 이미 있다면 drop하고 다시 create한다.
     properties:
       hibernate:
         format_sql: true # 실행되는 query를 보여줌
