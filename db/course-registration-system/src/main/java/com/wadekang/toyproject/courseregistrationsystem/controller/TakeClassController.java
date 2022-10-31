@@ -31,7 +31,7 @@ public class TakeClassController {
     private final ClassesService classesService;
     private final TakeClassService takeClassService;
 
-    @GetMapping("/register")
+    @GetMapping("/register") //수강 신청 클릭시 여기로 매핑
     public String courseRegistration(@ModelAttribute("classSearch") ClassSearch classSearch,
                                      @RequestParam(value  = "msg", required = false) String msg,
                                      Model model) {
@@ -43,7 +43,6 @@ public class TakeClassController {
         model.addAttribute("classes", classes);
         model.addAttribute("courses", courses);
         model.addAttribute("majors", majors);
-
         model.addAttribute("msg", msg);
 
         return "courseRegistration";

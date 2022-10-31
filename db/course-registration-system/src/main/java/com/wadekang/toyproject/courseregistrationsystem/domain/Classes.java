@@ -1,5 +1,7 @@
 package com.wadekang.toyproject.courseregistrationsystem.domain;
 
+import com.wadekang.toyproject.courseregistrationsystem.controller.dto.ClassUpdateRequestDto;
+import com.wadekang.toyproject.courseregistrationsystem.controller.dto.UserUpdateRequestDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +18,7 @@ public class Classes {
     @Column(name = "class_id", nullable = false)
     private Long classId;
 
-    @ManyToOne(targetEntity = Course.class, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = Course.class, fetch = FetchType.LAZY) ///여기부터!!
     @JoinColumn(name="course_id")
     private Course course;
 
@@ -41,10 +43,19 @@ public class Classes {
         this.curStudentNum = curStudentNum;
     }
 
+
+
+    public void update(ClassUpdateRequestDto requestDto) {
+        this.maxStudentNum = requestDto.getMaxStudentNum();
+
+    }
+
     //== 수강 신청 ==//
     public void registration() {
         this.curStudentNum++;
     }
+
+
 
     //== 수강 취소 ==//
     public void cancel() {

@@ -28,5 +28,6 @@ public class UserResponseDto {
         this.phoneNumber = entity.getPhoneNumber();
         this.major = entity.getMajor();
         this.takeClasses = entity.getTakeClasses();
+
     }
 }

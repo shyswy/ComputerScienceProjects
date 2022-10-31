@@ -26,13 +26,13 @@ public class TakeClassService {
         User user = userRepository.findById(userId).get();
         Classes classes = classesRepository.findById(classId).get();
 
-        if (classes.isFull()) throw new IllegalArgumentException("Failed: Full");
+        if (classes.isFull()) throw new IllegalArgumentException("Failed: Full"); //수강인원 가득참.
 
         Optional<TakeClass> any = user.getTakeClasses().stream()
                 .filter(takeClass ->
                         takeClass.getClasses().getCourse().getCourseId().equals(classes.getCourse().getCourseId())).findAny();
 
-        if (any.isPresent()) throw new IllegalArgumentException("Failed: Already Registered!");
+        if (any.isPresent()) throw new IllegalArgumentException("Failed: Already Registered!"); //이미 해당과목 신청
 
         TakeClass takeClass = takeClassRepository.save(
                 TakeClass.builder()
@@ -57,5 +57,6 @@ public class TakeClassService {
         classes.cancel();
 
         takeClassRepository.delete(takeClass);
+
     }
 }

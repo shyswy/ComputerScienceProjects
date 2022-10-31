@@ -7,7 +7,8 @@ import lombok.Setter;
 @Getter @Setter
 @NoArgsConstructor
 public class UserUpdateRequestDto {
-
+    //서비스 계층에서 DTO 이용해서 필요한 내용을 전달 받고, 반환하도록 처리하도록
+    // service 패키지의 Service 인터페이스와 ServiceImpl 클래스 추가
     private String loginId;
     private String username;
     private String email;

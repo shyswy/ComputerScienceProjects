@@ -22,6 +22,9 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    @Column (nullable = false)
+    private boolean aaaa;
+
     @Column(nullable = false)
     private String loginId;
 
@@ -38,6 +41,9 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+
+
 
     @Column
     private String email;
@@ -57,6 +63,8 @@ public class User extends BaseTimeEntity implements UserDetails {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.role = Role.STUDENT;
+
+        this.aaaa=false;
         this.takeClasses = new ArrayList<>();
     }
 

@@ -1,16 +1,20 @@
 package com.wadekang.toyproject.courseregistrationsystem.controller;
 
 import com.wadekang.toyproject.courseregistrationsystem.controller.dto.ClassSearch;
+import com.wadekang.toyproject.courseregistrationsystem.domain.Classes;
 import com.wadekang.toyproject.courseregistrationsystem.domain.Course;
 import com.wadekang.toyproject.courseregistrationsystem.domain.Major;
+import com.wadekang.toyproject.courseregistrationsystem.domain.User;
 import com.wadekang.toyproject.courseregistrationsystem.service.CourseService;
 import com.wadekang.toyproject.courseregistrationsystem.service.MajorService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -40,4 +44,33 @@ public class CourseController {
 
         return "classList";
     }
+
+    @GetMapping("/admincourses")
+    public String admincourseList(@ModelAttribute("classSearch") ClassSearch classSearch, Model model) {
+        List<Course> courses = courseService.findByMajor(classSearch.getMajorId());
+        List<Major> majors = majorService.findAll();
+
+        model.addAttribute("courses", courses);
+        model.addAttribute("majors", majors);
+
+        return "adminCourseList";
+    }
+
+    @GetMapping("/admincourses/{id}")
+    public String adminclassList(@PathVariable("id") Long courseId, Model model) {
+        Course course = courseService.findById(courseId);
+
+        model.addAttribute("classes", course.getClasses());
+
+        return "adminClassList";
+    }
+
+
+
+
+
+
+
+
+
 }
