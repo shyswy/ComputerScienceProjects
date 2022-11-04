@@ -11,4 +11,9 @@ public interface ClassesRepository extends JpaRepository<Classes, Long> {
 
     @Query("select c from Classes c where c.course.courseId = :courseId")
     List<Classes> findByCourse(@Param("courseId") Long courseId);
+
+    @Query("select c from Classes c where c.averageScore is not null  order by c.averageScore desc ")
+    List<Classes> findTopTen();
+
+
 }

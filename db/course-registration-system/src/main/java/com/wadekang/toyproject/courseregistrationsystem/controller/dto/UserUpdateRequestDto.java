@@ -15,12 +15,18 @@ public class UserUpdateRequestDto {
     private String phoneNumber;
     private String majorName;
 
+    private Long averageScore;
+
+
+
     public UserUpdateRequestDto(String loginId, String username, String email, String phoneNumber, String majorName) {
         this.loginId = loginId;
         this.username = username;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.majorName = majorName;
+
+
     }
 
     public UserUpdateRequestDto(UserResponseDto userResponseDto) {
@@ -29,5 +35,6 @@ public class UserUpdateRequestDto {
         this.email = userResponseDto.getEmail();
         this.phoneNumber = userResponseDto.getPhoneNumber();
         this.majorName = userResponseDto.getMajor().getMajorName();
+        this.averageScore=userResponseDto.getAverageScore();
     }
 }

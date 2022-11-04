@@ -12,7 +12,9 @@ import com.wadekang.toyproject.courseregistrationsystem.domain.TakeClass;
 import com.wadekang.toyproject.courseregistrationsystem.domain.User;
 import com.wadekang.toyproject.courseregistrationsystem.repository.ClassesRepository;
 import com.wadekang.toyproject.courseregistrationsystem.repository.CourseRepository;
+import com.wadekang.toyproject.courseregistrationsystem.repository.TakeClassRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,8 @@ public class ClassesService {
     private final ClassesRepository classesRepository;
     private final CourseRepository courseRepository;
 
+    private final TakeClassRepository takeClassRepository;
+
     public ClassesResponseDto findById(Long classId) {
         Classes classes = classesRepository.findById(classId)
                 .orElseThrow(() -> new IllegalArgumentException("Failed: No Classes Info"));
@@ -34,10 +38,34 @@ public class ClassesService {
         return new ClassesResponseDto(classes);
     }
 
+    /*
+    public ClassesResponseDto findByName(String classesName) {
+        List<Classes> classes = classesRepository.findByNameContaining(classesName)
+                .orElseThrow(() -> new IllegalArgumentException("Failed: No Classes Info"));
+
+        return new ClassesResponseDto(classes);
+    }
+
+     */
+
+
+
     @Transactional
     public Long update(Long classId, ClassUpdateRequestDto requestDto) {
         Classes classes = classesRepository.findById(classId)
                 .orElseThrow(() -> new IllegalArgumentException("Failed: No Class Info"));
+
+        Long  ans1= takeClassRepository.findClassAverage(classId)
+                .orElseThrow(() -> new IllegalArgumentException("Failed: no avgClassScore Info"));
+        Long  ans2= takeClassRepository.findClassUserAverage(classId)
+                .orElseThrow(() -> new IllegalArgumentException("Failed: no avgClassUserScore Info"));
+       // Long ans= avg.getFirst()-avg.getSecond(); //수강한 유저들 개인의 평균학점의 평균 -해당 과목의 평균학점
+
+
+
+        Long ans=ans2-ans1; //해당 수업 듣는 유저의 평균 학점의 평균 - 해당 수업듣는 유저들의 평균 학점
+        requestDto.setAverageScore(ans);
+
 
         classes.update(requestDto);
 
@@ -84,6 +112,10 @@ public class ClassesService {
 
 
     }
+
+    public List<Classes> findAll() {
+        return classesRepository.findAll();
+    }
 /*
     public Classes findById(Long classId) {
         return classesRepository.findById(classId)
@@ -95,6 +127,8 @@ public class ClassesService {
     public List<Classes> findByCourse(Long courseId) { //classdto로 받아줌.
         return classesRepository.findByCourse(courseId);
     }
+
+    public List<Classes> findTopTen(){return classesRepository.findTopTen(); }
 
 
 

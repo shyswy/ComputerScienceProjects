@@ -36,6 +36,8 @@ public class ClassUpdateRequestDto {
 
     private String professorName;
 
+    private Long averageScore;
+
 
 
 
@@ -57,17 +59,19 @@ public class ClassUpdateRequestDto {
         this.classId=classesResponseDto.getClassId();
         this.classNumber=classesResponseDto.getClassNumber();
         this.professorName=classesResponseDto.getProfessorName();
+        this.averageScore=classesResponseDto.getAverageScore();
 
     }
 
     @Builder
-    public ClassUpdateRequestDto(int maxStudentNum,int curStudentNum,Long classId, Course course, int classNumber,String professorName) {
+    public ClassUpdateRequestDto(int maxStudentNum,int curStudentNum,Long classId, Course course, int classNumber,String professorName, Long averageScore) {
       this.maxStudentNum=maxStudentNum;
       this.curStudentNum=curStudentNum;
       this.classId=classId;
       this.course= course ;
       this.classNumber=classNumber;
       this.professorName=professorName;
+      this.averageScore=averageScore;
     }
 
 

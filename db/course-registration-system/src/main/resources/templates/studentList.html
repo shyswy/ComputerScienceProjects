@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"/>
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <div>
+        <div style="margin-bottom: 15px;">
+            <a href="javascript:history.back()" class="btn btn-primary">Back</a> <!--이전페이지 이동-->
+
+
+            <!-- 과목 한개도 없으면 아래에서 에러 발생!-->
+
+        </div>
+        <table class="table table-striped text-center">
+            <thead>
+            <tr>
+                <th>이름</th>
+                <th>전공</th>
+                <th>연락처</th>
+                <th>이메일</th>
+                <th>평균학점</th>
+                <th>수업조회</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user: ${users}">
+                <td th:text="${user.username}"></td>
+                <td th:text="${user.major.majorName}"></td>
+                <td th:text="|0${user.phoneNumber}|"></td>
+                <td th:text="${user.email}"></td>
+                <td th:text="${user.averageScore}"></td>
+
+
+                <td>
+                    <a href="#" th:href="@{/studentClasses/{id} (id=${user.userId})}"
+                       class="btn btn-danger">수업조회</a>
+                </td>
+
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div th:replace="fragments/footer :: footer"/>
+</div> <!-- /container -->
+</body>
+</html>

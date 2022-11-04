@@ -1,5 +1,9 @@
 package com.wadekang.toyproject.courseregistrationsystem.service;
 
+import com.wadekang.toyproject.courseregistrationsystem.controller.dto.ClassUpdateRequestDto;
+import com.wadekang.toyproject.courseregistrationsystem.controller.dto.TakeClassUpdateRequestDto;
+import com.wadekang.toyproject.courseregistrationsystem.controller.dto.UserResponseDto;
+import com.wadekang.toyproject.courseregistrationsystem.controller.dto.UserUpdateRequestDto;
 import com.wadekang.toyproject.courseregistrationsystem.domain.Classes;
 import com.wadekang.toyproject.courseregistrationsystem.domain.TakeClass;
 import com.wadekang.toyproject.courseregistrationsystem.domain.User;
@@ -21,6 +25,8 @@ public class TakeClassService {
     private final UserRepository userRepository;
     private final ClassesRepository classesRepository;
 
+    private final UserService userService;
+
     @Transactional
     public Long save(Long userId, Long classId) {
         User user = userRepository.findById(userId).get();
@@ -41,7 +47,13 @@ public class TakeClassService {
                     .build());
 
         user.registration(takeClass);
+
+
         classes.registration();
+
+
+
+
 
         return takeClass.getTakeId();
     }
@@ -59,4 +71,43 @@ public class TakeClassService {
         takeClassRepository.delete(takeClass);
 
     }
+
+
+    @Transactional
+    public Long update(Long takeId, TakeClassUpdateRequestDto takenrequestDto) {
+        TakeClass takeClass = takeClassRepository.findById(takeId)
+                .orElseThrow(() -> new IllegalArgumentException("Failed: No Class Info"));
+
+
+
+        //여기서 새로 추가된 take class 포함한 평균학점 계산하기.
+
+
+
+
+        //.orElseThrow(() -> new UsernameNotFoundException("Failed: No User Info"));
+
+
+        takeClass.update(takenrequestDto);
+/*
+        UserResponseDto userResponseDto =userService.findById(takenrequestDto.getUserId());
+        UserUpdateRequestDto userUpdateRequestDto=new UserUpdateRequestDto(userResponseDto);
+        userService.update(takenrequestDto.getUserId(),userUpdateRequestDto);
+*/
+        return takeId;
+    }
+
+
+
+    @Transactional
+    public TakeClassUpdateRequestDto findbyId(Long takeID){  //take class에 정보 업데이트를 위해 생성
+        //takeId로 찾고있는 takeclass를 찾아 Grade를 찾아 학생이 take한 수업의 grade정보를 가져오거나 변경가능.
+        TakeClass takeClass= takeClassRepository.findById(takeID)
+                .orElseThrow(() -> new IllegalArgumentException("Failed: No TakeClass Info"));
+
+        return new TakeClassUpdateRequestDto(takeID,takeClass.getGrade()
+                ,takeClass.getUser().getUserId());
+    }
+
+
 }

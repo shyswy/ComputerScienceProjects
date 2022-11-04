@@ -42,8 +42,8 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
-
-
+    @Column
+    private Long averageScore;
 
     @Column
     private String email;
@@ -53,6 +53,9 @@ public class User extends BaseTimeEntity implements UserDetails {
 
     @OneToMany(mappedBy = "user")
     private List<TakeClass> takeClasses;
+
+    @OneToMany(mappedBy = "user")
+    private List<Credit> credits;
 
     @Builder(builderClassName = "UserSignUpBuilder", builderMethodName = "signupBuilder")
     public User(String loginId, String password, String username, Major major, String email, String phoneNumber) {
@@ -64,13 +67,17 @@ public class User extends BaseTimeEntity implements UserDetails {
         this.phoneNumber = phoneNumber;
         this.role = Role.STUDENT;
 
+        this.averageScore=0L;
+
         this.aaaa=false;
         this.takeClasses = new ArrayList<>();
+        this.credits=new ArrayList<>();
     }
 
     public void update(UserUpdateRequestDto requestDto) {
         this.email = requestDto.getEmail();
         this.phoneNumber = requestDto.getPhoneNumber();
+        this.averageScore=requestDto.getAverageScore();
     }
 
     //== 수강 신청 ==//

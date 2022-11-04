@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -34,6 +36,22 @@ public class Classes {
     @Column(nullable = false)
     private int curStudentNum;
 
+
+    @OneToMany(mappedBy = "classes")
+    private List<TakeClass> takeClasses;
+
+
+    @OneToMany(mappedBy = "classes")
+    private List<ClassTime> classTimes;
+
+    @OneToMany(mappedBy = "classes")
+    private List<Credit> credits;
+
+    @Column
+    private Long averageScore;
+
+
+
     @Builder
     public Classes(Course course, int classNumber, String professorName, int maxStudentNum, int curStudentNum) {
         this.course = course;
@@ -41,12 +59,18 @@ public class Classes {
         this.professorName = professorName;
         this.maxStudentNum = maxStudentNum;
         this.curStudentNum = curStudentNum;
+
+        this.classTimes=new ArrayList<>();
+        this.credits=new ArrayList<>();
+        this.takeClasses=new ArrayList<>();
+        this.averageScore=0L;
     }
 
 
 
     public void update(ClassUpdateRequestDto requestDto) {
         this.maxStudentNum = requestDto.getMaxStudentNum();
+        this.averageScore=requestDto.getAverageScore();
 
     }
 

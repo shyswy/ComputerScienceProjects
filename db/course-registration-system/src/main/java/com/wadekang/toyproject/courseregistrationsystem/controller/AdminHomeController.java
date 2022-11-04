@@ -2,10 +2,7 @@ package com.wadekang.toyproject.courseregistrationsystem.controller;
 
 import com.wadekang.toyproject.courseregistrationsystem.controller.dto.ClassUpdateRequestDto;
 
-import com.wadekang.toyproject.courseregistrationsystem.domain.Course;
-import com.wadekang.toyproject.courseregistrationsystem.domain.Major;
-import com.wadekang.toyproject.courseregistrationsystem.domain.Role;
-import com.wadekang.toyproject.courseregistrationsystem.domain.User;
+import com.wadekang.toyproject.courseregistrationsystem.domain.*;
 import com.wadekang.toyproject.courseregistrationsystem.service.ClassesService;
 import com.wadekang.toyproject.courseregistrationsystem.service.CourseService;
 import com.wadekang.toyproject.courseregistrationsystem.service.MajorService;
@@ -21,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -85,7 +83,6 @@ public class AdminHomeController {
         model.addAttribute("msg", msg);
         return "adminClassAdd";
     }
-
     @PostMapping("/classesadd")
     public String create(ClassUpdateRequestDto classUpdateRequestDto, Model model) {
         try {
@@ -104,6 +101,25 @@ public class AdminHomeController {
         }
 
         return "redirect:/";
+    }
+
+    @GetMapping("/statistics")
+    public String statistics(Model model){
+        List<Classes> classes=classesService.findTopTen();
+
+
+
+        int size=classes.size();
+        if(size>10){
+            size=10;
+        }
+        List<Classes> topTen=classes.subList(0,size);
+
+
+
+        model.addAttribute("topTen",topTen);
+        return "statistics";
+
     }
 
 

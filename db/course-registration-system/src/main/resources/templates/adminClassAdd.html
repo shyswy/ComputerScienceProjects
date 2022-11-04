@@ -32,14 +32,8 @@
             <p th:text="${msg}" class="alert alert-danger"></p>
         </div>
 
-        <div>
-            <label th:for="classId">수업 id</label>
-            <input type="number" th:field="*{classId}" id="classId" class="form-control" required>
-        </div>
-        <div>
-            <label th:for="curStudentNum">현재 학생 수</label>
-            <input type="number" th:field="*{curStudentNum}" id="curStudentNum" class="form-control" required>
-        </div>
+
+        
         <div>
             <label th:for="maxStudentNum">최대 정원</label>
             <input type="number" th:field="*{maxStudentNum}" id="maxStudentNum" class="form-control" required>

@@ -1,14 +1,13 @@
 package com.wadekang.toyproject.courseregistrationsystem.controller;
 
 import com.wadekang.toyproject.courseregistrationsystem.controller.dto.ClassSearch;
+import com.wadekang.toyproject.courseregistrationsystem.controller.dto.UserResponseDto;
+import com.wadekang.toyproject.courseregistrationsystem.controller.dto.UserUpdateRequestDto;
 import com.wadekang.toyproject.courseregistrationsystem.domain.Classes;
 import com.wadekang.toyproject.courseregistrationsystem.domain.Course;
 import com.wadekang.toyproject.courseregistrationsystem.domain.Major;
 import com.wadekang.toyproject.courseregistrationsystem.domain.User;
-import com.wadekang.toyproject.courseregistrationsystem.service.ClassesService;
-import com.wadekang.toyproject.courseregistrationsystem.service.CourseService;
-import com.wadekang.toyproject.courseregistrationsystem.service.MajorService;
-import com.wadekang.toyproject.courseregistrationsystem.service.TakeClassService;
+import com.wadekang.toyproject.courseregistrationsystem.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,6 +30,7 @@ public class TakeClassController {
     private final ClassesService classesService;
     private final TakeClassService takeClassService;
 
+    private final UserService userService;
     @GetMapping("/register") //수강 신청 클릭시 여기로 매핑
     public String courseRegistration(@ModelAttribute("classSearch") ClassSearch classSearch,
                                      @RequestParam(value  = "msg", required = false) String msg,
@@ -52,6 +52,12 @@ public class TakeClassController {
     public String courseRegister(@PathVariable("id") Long classId, @AuthenticationPrincipal User user) {
         try {
             takeClassService.save(user.getUserId(), classId);
+
+            //UserResponseDto userResponseDto=new UserResponseDto(user);
+            //UserUpdateRequestDto userUpdateRequestDto=new UserUpdateRequestDto(userResponseDto);
+            //userService.update(user.getUserId(),userUpdateRequestDto);
+
+
         } catch (IllegalArgumentException e) {
             return "redirect:/register?msg=" + e.getMessage();
         }

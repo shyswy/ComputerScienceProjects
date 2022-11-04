@@ -21,6 +21,8 @@ public class ClassesResponseDto {
 
     private int maxStudentNum;
 
+    private Long averageScore;
+
 
     private Long courseid;
 
@@ -32,6 +34,7 @@ public class ClassesResponseDto {
         this.course=entity.getCourse();
         this.classNumber=entity.getClassNumber();
         this.professorName=entity.getProfessorName();
+        this.averageScore=entity.getAverageScore();
 
     }
 }
