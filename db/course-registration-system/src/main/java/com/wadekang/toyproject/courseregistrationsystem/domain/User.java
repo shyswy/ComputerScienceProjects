@@ -55,6 +55,9 @@ public class User extends BaseTimeEntity implements UserDetails {
     private List<TakeClass> takeClasses;
 
     @OneToMany(mappedBy = "user")
+    private List<HopeClass> hopeClasses;
+
+    @OneToMany(mappedBy = "user")
     private List<Credit> credits;
 
     @Builder(builderClassName = "UserSignUpBuilder", builderMethodName = "signupBuilder")
@@ -71,6 +74,7 @@ public class User extends BaseTimeEntity implements UserDetails {
 
         this.aaaa=false;
         this.takeClasses = new ArrayList<>();
+        this.hopeClasses=new ArrayList<>();
         this.credits=new ArrayList<>();
     }
 
@@ -85,11 +89,28 @@ public class User extends BaseTimeEntity implements UserDetails {
         this.takeClasses.add(takeClass);
     }
 
+    public void hopeRegistration(HopeClass hopeClass) {
+        this.hopeClasses.add(hopeClass);
+    }
+
+
     //== 수강 취소 ==//
     public void cancel(TakeClass takeClass) {
         this.takeClasses.remove(takeClass);
     }
 
+
+    public void cancelHope(HopeClass hopeClass) {
+        this.hopeClasses.remove(hopeClass);
+    }
+
+
+
+    /*
+    public void hopeCancel(HopeClass hopeClass) {
+        this.hopeClasses.remove(hopeClass);
+    }
+*/
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

@@ -25,7 +25,6 @@ public class RoomService {
         return roomRepository.findAll();
     }
 
-
     @Transactional
     public Long save(Room room) {
         Room buildRoom=roomRepository.save(

@@ -1,9 +1,6 @@
 package com.wadekang.toyproject.courseregistrationsystem.controller.dto;
 
-import com.wadekang.toyproject.courseregistrationsystem.domain.Credit;
-import com.wadekang.toyproject.courseregistrationsystem.domain.Major;
-import com.wadekang.toyproject.courseregistrationsystem.domain.TakeClass;
-import com.wadekang.toyproject.courseregistrationsystem.domain.User;
+import com.wadekang.toyproject.courseregistrationsystem.domain.*;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -21,6 +18,8 @@ public class UserResponseDto {
     private Major major;
     private List<TakeClass> takeClasses;
 
+    private List<HopeClass> hopeClasses;
+
     private Long averageScore;
 
 
@@ -36,6 +35,7 @@ public class UserResponseDto {
         this.phoneNumber = entity.getPhoneNumber();
         this.major = entity.getMajor();
         this.takeClasses = entity.getTakeClasses();
+        this.hopeClasses=entity.getHopeClasses();
         this.averageScore= entity.getAverageScore();
 
 

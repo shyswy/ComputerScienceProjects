@@ -50,6 +50,7 @@
                 <th>인원</th>
                 <th>시간</th>
                 <th>교실</th>
+                <th>희망수업</th>
                 <th>신청</th>
             </tr>
             </thead>
@@ -63,9 +64,14 @@
                 <td th:text="|요일: ${class.day} 시작: ${class.startTime} 종료: ${class.endTime}|"></td>
                 <td th:text="|${class.room.buildingName} ${class.room.roomNo}호|"></td>
                 <td>
+                    <a href="#" th:href="@{/hopeRegister/{id} (id=${class.classId})}"
+                       class="btn btn-secondary">희망추가</a>
+                </td>
+                <td>
                     <a href="#" th:href="@{/register/{id} (id=${class.classId})}"
                        class="btn btn-secondary">수강 신청</a>
                 </td>
+
             </tr>
             </tbody>
         </table>

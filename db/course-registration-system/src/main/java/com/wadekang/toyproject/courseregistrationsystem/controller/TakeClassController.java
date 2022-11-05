@@ -30,6 +30,8 @@ public class TakeClassController {
     private final ClassesService classesService;
     private final TakeClassService takeClassService;
 
+    private final HopeClassService hopeClassService;
+
     private final UserService userService;
     @GetMapping("/register") //수강 신청 클릭시 여기로 매핑
     public String courseRegistration(@ModelAttribute("classSearch") ClassSearch classSearch,
@@ -67,10 +69,32 @@ public class TakeClassController {
         return "redirect:/register?msg=Success!";
     }
 
+    @GetMapping("/hopeRegister/{id}")
+    public String hopeRegister(@PathVariable("id") Long classId, @AuthenticationPrincipal User user) {
+        try {
+            hopeClassService.save(user.getUserId(), classId);
+
+
+
+
+        } catch (IllegalArgumentException e) {
+            return "redirect:/register?msg=" + e.getMessage();
+        }
+
+        return "redirect:/register?msg=Success!";
+    }
+
     @GetMapping("/cancel/{id}")
     public String courseCancel(@PathVariable("id") Long takeId) {
         takeClassService.delete(takeId);
 
         return "redirect:/myCourses?msg=Success!";
+    }
+
+    @GetMapping("/hopeCancel/{id}")
+    public String hopeCourseCancel(@PathVariable("id") Long hopeId) {
+        hopeClassService.delete(hopeId);
+
+        return "redirect:/myHope?msg=Success!";
     }
 }

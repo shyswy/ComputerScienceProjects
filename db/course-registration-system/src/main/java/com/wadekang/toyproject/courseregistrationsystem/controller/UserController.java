@@ -76,6 +76,19 @@ public class UserController {
         return "myCourseList";
     }
 
+    @GetMapping("/myHope")
+    public String myHopeList(@AuthenticationPrincipal User user, Model model,
+                             @RequestParam(value="msg", required = false) String msg) {
+        UserResponseDto userResponseDto = userService.findById(user.getUserId());
+
+        model.addAttribute("username", userResponseDto.getUsername());
+        model.addAttribute("hopeClasses", userResponseDto.getHopeClasses());
+        model.addAttribute("msg", msg);
+
+        return "HopeList";
+    }
+
+
     @GetMapping("/edit")
     public String update(@AuthenticationPrincipal User user, Model model, //AuthenticationPrincipal : 로그인 유저 객체 파라미터로받기.
                          @RequestParam(value="msg", required = false) String msg) {
