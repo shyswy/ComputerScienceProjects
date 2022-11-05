@@ -8,4 +8,6 @@ public class ClassSearch {
 
     private Long majorId;
     private Long courseId;
+    private String keyword;
+    private String classNumber;
 }

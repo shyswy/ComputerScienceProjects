@@ -33,7 +33,7 @@
         </div>
 
 
-        
+
         <div>
             <label th:for="maxStudentNum">최대 정원</label>
             <input type="number" th:field="*{maxStudentNum}" id="maxStudentNum" class="form-control" required>
@@ -46,6 +46,16 @@
             <label th:for="professorName">교수 명</label>
             <input type="text" th:field="*{professorName}" id="professorName" class="form-control" required>
         </div>
+
+        <div >
+            <label th:for="day">요일</label>
+            <input type="text" th:field="*{day}" id="day" class="form-control" required>
+            <label th:for="startTime">시작 시간</label>
+            <input type="text" th:field="*{startTime}" id="startTime" class="form-control" required>
+            <label th:for="endTime">종료 시간</label>
+            <input type="text" th:field="*{endTime}" id="endTime" class="form-control" required>
+        </div>
+
 
 
 
@@ -60,6 +70,16 @@
                         <option th:each="course : ${courses}" th:value="${course.courseId}" th:text="${course.courseName}" th:selected="${course.courseId == classUpdateRequestDto.courseId}">
 
                             과목 선택
+                        </option>
+                    </select>
+                </div>
+
+                <div class="row">
+                    <select id="roomId" name="roomId" required>
+                        <option value="">교실 선택</option>
+                        <option th:each="room : ${rooms}" th:value="${room.roomId}" th:text="|${room.buildingName} ${room.roomNo}|" th:selected="${room.roomId == classUpdateRequestDto.roomId}">
+
+                            교실 선택
                         </option>
                     </select>
                 </div>

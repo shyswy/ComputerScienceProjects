@@ -34,8 +34,9 @@ public class CourseController {
         List<Course> courses = courseService.findByMajor(classSearch.getMajorId());
         //@ModelAttribute 어노테이션으로, html에서 만약 ClassSearch에 변화 생길 시, 이곳에도 반영되게
         List<Major> majors = majorService.findAll();
+        List<Course> keywordCourses =courseService.findByMajorAndKeyword(classSearch.getMajorId(),classSearch.getKeyword());
 
-        model.addAttribute("courses", courses);//html에서 Classsearch가 바뀌면, 그값을 다시 html에 반영해준다.
+        model.addAttribute("courses", keywordCourses);//html에서 Classsearch가 바뀌면, 그값을 다시 html에 반영해준다.
         model.addAttribute("majors", majors);
 
         return "courseList";

@@ -29,6 +29,15 @@ public interface TakeClassRepository extends JpaRepository<TakeClass, Long> {
     //Optional<Long []> findClassAverage(@Param("classId") Long classId);
 
 
+    @Query("select tc from TakeClass tc where tc.classes.startTime < :endTime and tc.classes.endTime > :startTime and tc.classes.Day= :Day ")
+    List<TakeClass> findRepeat(@Param("Day") Long Day,@Param("startTime") Long startTime, @Param("endTime") Long endTime);
+    //@Query("select c from Classes c where c.startTime < :endTime and c.endTime > :startTime and c.Day= :Day ")
+    //List<Classes> findRepeat(@Param("Day") Long Day,@Param("startTime") Long startTime, @Param("endTime") Long endTime);
+    // 시간대 중복 체크.  day 중복하고,   시작 or 종료 시간중 하나라도 기존 시작, 종료 시간 사이에 존재시 불가능!
+    // old 시작이 new 종료보다 작고 old 종료는 new 시작보다 큰 경우
+    //+ 같은 요일
+
+
 
 
 

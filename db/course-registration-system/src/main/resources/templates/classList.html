@@ -28,6 +28,9 @@
                 <th>분반</th>
                 <th>정원</th>
                 <th>인원</th>
+                <th>시간</th>
+                <th>교실</th>
+
             </tr>
             </thead>
             <tbody>
@@ -37,6 +40,9 @@
                 <td th:text="|0${class.classNumber}|"></td>
                 <td th:text="${class.maxStudentNum}"></td>
                 <td th:text="${class.curStudentNum}"></td>
+                <td th:text="|요일: ${class.day} 시작: ${class.startTime} 종료: ${class.endTime}|"></td>
+                <td th:text="|${class.room.buildingName} ${class.room.roomNo}호|"></td>
+
             </tr>
             </tbody>
         </table>

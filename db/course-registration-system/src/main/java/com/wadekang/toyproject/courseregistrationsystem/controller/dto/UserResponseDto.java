@@ -26,6 +26,8 @@ public class UserResponseDto {
 
 
 
+
+
     public UserResponseDto(User entity) {
         this.userId = entity.getUserId();
         this.loginId = entity.getLoginId();
@@ -35,6 +37,7 @@ public class UserResponseDto {
         this.major = entity.getMajor();
         this.takeClasses = entity.getTakeClasses();
         this.averageScore= entity.getAverageScore();
+
 
 
     }

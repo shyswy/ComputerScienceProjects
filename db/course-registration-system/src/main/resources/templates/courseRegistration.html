@@ -23,6 +23,7 @@
                         </option>
                     </select>
                 </div>
+<!--
                 <div class="form-group mx-sm-1 mb-2">
                     <select th:field="*{courseId}" class="form-control">
                         <option value="">과목 선택</option>
@@ -31,6 +32,10 @@
                                 th:text="${course.courseName}">option
                         </option>
                     </select>
+                </div>
+                -->
+                <div>
+                    <input type="text" th:field="*{keyword}" id="keyword" class="form-control">
                 </div>
                 <button type="submit" class="btn btn-primary mb-2">검색</button>
             </form>
@@ -43,6 +48,8 @@
                 <th>분반</th>
                 <th>정원</th>
                 <th>인원</th>
+                <th>시간</th>
+                <th>교실</th>
                 <th>신청</th>
             </tr>
             </thead>
@@ -53,6 +60,8 @@
                 <td th:text="|0${class.classNumber}|"></td>
                 <td th:text="${class.maxStudentNum}"></td>
                 <td th:text="${class.curStudentNum}"></td>
+                <td th:text="|요일: ${class.day} 시작: ${class.startTime} 종료: ${class.endTime}|"></td>
+                <td th:text="|${class.room.buildingName} ${class.room.roomNo}호|"></td>
                 <td>
                     <a href="#" th:href="@{/register/{id} (id=${class.classId})}"
                        class="btn btn-secondary">수강 신청</a>

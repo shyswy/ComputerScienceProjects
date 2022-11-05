@@ -36,11 +36,13 @@ public class TakeClassController {
                                      @RequestParam(value  = "msg", required = false) String msg,
                                      Model model) {
 
-        List<Classes> classes = classesService.findByCourse(classSearch.getCourseId());
+
+
         List<Course> courses = courseService.findByMajor(classSearch.getMajorId());
         List<Major> majors = majorService.findAll();
-
-        model.addAttribute("classes", classes);
+        List<Classes> keywordClasses =classesService.findByMajorAndKeyword(classSearch.getMajorId(),classSearch.getKeyword());
+        List<Classes> classes = classesService.findByCourse(classSearch.getCourseId());
+        model.addAttribute("classes", keywordClasses);
         model.addAttribute("courses", courses);
         model.addAttribute("majors", majors);
         model.addAttribute("msg", msg);

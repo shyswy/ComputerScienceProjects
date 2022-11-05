@@ -6,6 +6,7 @@ import com.wadekang.toyproject.courseregistrationsystem.domain.*;
 import com.wadekang.toyproject.courseregistrationsystem.service.ClassesService;
 import com.wadekang.toyproject.courseregistrationsystem.service.CourseService;
 import com.wadekang.toyproject.courseregistrationsystem.service.MajorService;
+import com.wadekang.toyproject.courseregistrationsystem.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,6 +33,8 @@ public class AdminHomeController {
 
     private final CourseService courseService;
     private final ClassesService classesService;
+
+    private final RoomService roomService;
 
     @GetMapping(value = { "/adminHome"})
     public String home(Model model) {
@@ -78,8 +81,10 @@ public class AdminHomeController {
                          @RequestParam(value="msg", required = false) String msg) {
 
         List<Course> courses = courseService.findAll();
+        List<Room> rooms=roomService.findAll();
         model.addAttribute("classUpdateRequestDto", new ClassUpdateRequestDto());
         model.addAttribute("courses", courses);
+        model.addAttribute("rooms",rooms);
         model.addAttribute("msg", msg);
         return "adminClassAdd";
     }
@@ -90,12 +95,17 @@ public class AdminHomeController {
             Long courseId= classUpdateRequestDto.getCourseId();// html에서 타임리프로 selected 받아오는건
             //객체를 온전히 받아오지 못한다.. 따라서 courseId 를 dto 항목에추가함.(html에서 select 된 course 객체를 받아오는게
             //아닌, 해당 course의 Id 만 가져온뒤, save에서 findbyid를 통해 해당 course 객체를 repository에서 가져옴
-            classesService.save(courseId, classUpdateRequestDto);
+
+            Long roomId=classUpdateRequestDto.getRoomId(); //위와 같다.
+
+            classesService.save(courseId, roomId,classUpdateRequestDto);
         } catch (Exception e) {
             List<Course> course = courseService.findAll();
+            List<Room> room =roomService.findAll();
 
-            model.addAttribute("course", course);
-            model.addAttribute("classDto", classUpdateRequestDto);
+            model.addAttribute("courses", course);
+            model.addAttribute("rooms",room);
+            model.addAttribute("classUpdateRequestDto", classUpdateRequestDto);
             model.addAttribute("msg", e.getMessage());
             return "adminClassAdd";
         }

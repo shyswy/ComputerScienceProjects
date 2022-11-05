@@ -22,10 +22,16 @@ public class CourseService {
         return courseRepository.findByMajor(majorId);
     }
 
+    public List<Course> findByMajorAndKeyword(Long majorId,String keyword) {
+        return courseRepository.findByMajorAndKeyword(majorId,keyword);
+    }
+
     public Course findById(Long courseId) {
         return courseRepository.findById(courseId)
                 .orElseThrow(() -> new IllegalArgumentException("Failed: No Course Info"));
     }
+
+
 
     public List<Course> findAll() {
         return courseRepository.findAll();

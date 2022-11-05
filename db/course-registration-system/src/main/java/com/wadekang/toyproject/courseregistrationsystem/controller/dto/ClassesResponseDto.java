@@ -28,6 +28,15 @@ public class ClassesResponseDto {
 
     private int curStudentNum;
 
+    private Long roomId;
+
+    private Long startTime;
+
+    private Long endTime;
+
+    private Long day;
+
+
     public ClassesResponseDto(Classes entity) {
         this.maxStudentNum = entity.getMaxStudentNum();
         this.classId= entity.getClassId();
@@ -35,6 +44,10 @@ public class ClassesResponseDto {
         this.classNumber=entity.getClassNumber();
         this.professorName=entity.getProfessorName();
         this.averageScore=entity.getAverageScore();
+        this.roomId=entity.getRoom().getRoomId();
+        this.startTime=entity.getStartTime();
+        this.endTime=entity.getEndTime();
+        this.day=entity.getEndTime();
 
     }
 }

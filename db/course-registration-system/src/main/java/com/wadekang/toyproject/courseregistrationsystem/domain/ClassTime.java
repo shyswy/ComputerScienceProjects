@@ -18,9 +18,9 @@ public class ClassTime {
     private Long timeId;
 
 
-    @ManyToOne(targetEntity = Classes.class, fetch = FetchType.LAZY)
-    @JoinColumn(name="class_id")
-    private Classes classes;
+    //@ManyToOne(targetEntity = Classes.class, fetch = FetchType.LAZY)
+    //@JoinColumn(name="class_id")
+    //private Classes classes;
 
     @Column(nullable = false)
     private Long day;
@@ -32,7 +32,7 @@ public class ClassTime {
 
     @Builder
     public ClassTime(Classes classes,Long day,Long startTime,Long endTime) {
-        this.classes=classes;
+        //this.classes=classes;
         this.day=day;
         this.startTime=startTime;
         this.endTime=endTime;

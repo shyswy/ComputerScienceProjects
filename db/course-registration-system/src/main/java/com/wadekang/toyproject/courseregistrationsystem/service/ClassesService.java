@@ -5,13 +5,11 @@ import com.wadekang.toyproject.courseregistrationsystem.controller.dto.ClassUpda
 
 import com.wadekang.toyproject.courseregistrationsystem.controller.dto.UserResponseDto;
 import com.wadekang.toyproject.courseregistrationsystem.controller.dto.UserSignUpDto;
-import com.wadekang.toyproject.courseregistrationsystem.domain.Classes;
+import com.wadekang.toyproject.courseregistrationsystem.domain.*;
 
-import com.wadekang.toyproject.courseregistrationsystem.domain.Course;
-import com.wadekang.toyproject.courseregistrationsystem.domain.TakeClass;
-import com.wadekang.toyproject.courseregistrationsystem.domain.User;
 import com.wadekang.toyproject.courseregistrationsystem.repository.ClassesRepository;
 import com.wadekang.toyproject.courseregistrationsystem.repository.CourseRepository;
+import com.wadekang.toyproject.courseregistrationsystem.repository.RoomRepository;
 import com.wadekang.toyproject.courseregistrationsystem.repository.TakeClassRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
@@ -30,6 +28,8 @@ public class ClassesService {
     private final CourseRepository courseRepository;
 
     private final TakeClassRepository takeClassRepository;
+
+    private final RoomRepository roomRepository;
 
     public ClassesResponseDto findById(Long classId) {
         Classes classes = classesRepository.findById(classId)
@@ -62,7 +62,6 @@ public class ClassesService {
        // Long ans= avg.getFirst()-avg.getSecond(); //수강한 유저들 개인의 평균학점의 평균 -해당 과목의 평균학점
 
 
-
         Long ans=ans2-ans1; //해당 수업 듣는 유저의 평균 학점의 평균 - 해당 수업듣는 유저들의 평균 학점
         requestDto.setAverageScore(ans);
 
@@ -74,11 +73,19 @@ public class ClassesService {
 
 
     @Transactional
-    public Long save(Long courseId ,ClassUpdateRequestDto classes) {
+    public Long save(Long courseId ,Long roomId,ClassUpdateRequestDto classes) {
 
 
         //if (classes.isFull()) throw new IllegalArgumentException("Failed: Full"); //수강인원 가득참.
+
         Course course= courseRepository.findById(courseId).get();
+        Room room =roomRepository.findById(roomId).get();
+
+
+
+
+        if(room.getMaxPerson()<classes.getMaxStudentNum()) throw new IllegalArgumentException("Failed: Over Class Size"); //교실 정원 초과
+
         Classes tmpClasses = classesRepository.save(
                 Classes.builder()
                         .course(course)  //객체는 따로 생성해서 저장해야지, getCourse() 로 하면안된다!
@@ -86,6 +93,7 @@ public class ClassesService {
                         .professorName(classes.getProfessorName())
                         .maxStudentNum(classes.getMaxStudentNum())
                         .curStudentNum(classes.getCurStudentNum())
+                        .room(room)
                         .build());
 
 
@@ -129,6 +137,11 @@ public class ClassesService {
     }
 
     public List<Classes> findTopTen(){return classesRepository.findTopTen(); }
+
+
+    public List<Classes> findByMajorAndKeyword(Long majorId,String keyword) {
+        return classesRepository.findByMajorAndKeyword(majorId,keyword);
+    }
 
 
 

@@ -38,6 +38,14 @@ public class ClassUpdateRequestDto {
 
     private Long averageScore;
 
+    private Long roomId;
+
+    private Long startTime;
+
+    private Long endTime;
+
+    private Long day;
+
 
 
 
@@ -60,11 +68,16 @@ public class ClassUpdateRequestDto {
         this.classNumber=classesResponseDto.getClassNumber();
         this.professorName=classesResponseDto.getProfessorName();
         this.averageScore=classesResponseDto.getAverageScore();
+        this.roomId= classesResponseDto.getRoomId();
+        this.day=classesResponseDto.getDay();
+        this.startTime=classesResponseDto.getStartTime();
+        this.endTime=classesResponseDto.getEndTime();
 
     }
 
     @Builder
-    public ClassUpdateRequestDto(int maxStudentNum,int curStudentNum,Long classId, Course course, int classNumber,String professorName, Long averageScore) {
+    public ClassUpdateRequestDto(int maxStudentNum,int curStudentNum,Long classId, Course course, int classNumber,String professorName, Long averageScore, Long roomId
+    ,Long startTime,Long endTime, Long day) {
       this.maxStudentNum=maxStudentNum;
       this.curStudentNum=curStudentNum;
       this.classId=classId;
@@ -72,6 +85,10 @@ public class ClassUpdateRequestDto {
       this.classNumber=classNumber;
       this.professorName=professorName;
       this.averageScore=averageScore;
+      this.roomId=roomId;
+      this.startTime=startTime;
+      this.endTime=endTime;
+      this.day=day;
     }
 
 
