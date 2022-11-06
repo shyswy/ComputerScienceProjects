@@ -94,6 +94,9 @@ public class ClassesService {
                         .maxStudentNum(classes.getMaxStudentNum())
                         .curStudentNum(classes.getCurStudentNum())
                         .room(room)
+                        .Day(classes.getDay())
+                        .startTime(classes.getStartTime())
+                        .endTime(classes.getEndTime())
                         .build());
 
 

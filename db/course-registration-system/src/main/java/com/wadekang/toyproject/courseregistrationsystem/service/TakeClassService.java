@@ -34,15 +34,19 @@ public class TakeClassService {
         Classes classes = classesRepository.findById(classId).get();
 
 
+        if( ! takeClassRepository.findNoAgain(userId,classId).isEmpty() )
+            throw new IllegalArgumentException("Failed: above B0 cannot re attend!");
+
         if (classes.isFull()) throw new IllegalArgumentException("Failed: Full"); //수강인원 가득참.
 
-        Optional<TakeClass> any = user.getTakeClasses().stream()
+        Optional<TakeClass> any = user.getTakeClasses().stream()// 같은 과목인것 이미 수강했다 filter
                 .filter(takeClass ->
                         takeClass.getClasses().getCourse().getCourseId().equals(classes.getCourse().getCourseId())).findAny();
 
-        if (any.isPresent()) throw new IllegalArgumentException("Failed: Already Registered!"); //이미 해당과목 신청
 
-        List<TakeClass> classesList=takeClassRepository.findRepeat(classes.getDay(),classes.getStartTime(),classes.getEndTime());
+        if (any.isPresent() ) throw new IllegalArgumentException("Failed: Already Registered!"); //이미 해당과목 신청
+
+        List<TakeClass> classesList=takeClassRepository.findRepeat(userId,classes.getDay(),classes.getStartTime(),classes.getEndTime());
         //List<Classes> classesList=classesRepository.findRepeat(classes);
         if( !( classesList.isEmpty() )  )
             throw new IllegalArgumentException("Failed: classTime is repeated");
@@ -70,6 +74,9 @@ public class TakeClassService {
     @Transactional
     public void delete(Long takeId) {
         TakeClass takeClass = takeClassRepository.findById(takeId).get();
+
+        if( ! takeClassRepository.findNoAgain(takeClass.getUser().getUserId(),takeClass.getClasses().getClassId()).isEmpty() )
+            throw new IllegalArgumentException("Failed: above B0 cannot erase classes");
 
         User user = userRepository.findById(takeClass.getUser().getUserId()).get();
         user.cancel(takeClass);
@@ -117,6 +124,14 @@ public class TakeClassService {
         return new TakeClassUpdateRequestDto(takeID,takeClass.getGrade()
                 ,takeClass.getUser().getUserId());
     }
+
+    @Transactional
+    public List<TakeClass> findByDay(Long userId, Long day){
+       return takeClassRepository.findByDay(userId, day);
+               // .orElseThrow(() -> new IllegalArgumentException("Failed: No TakeClass Info"));
+    }
+
+
 
 
 }

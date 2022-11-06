@@ -55,6 +55,8 @@ public class TakeClassController {
     @GetMapping("/register/{id}")
     public String courseRegister(@PathVariable("id") Long classId, @AuthenticationPrincipal User user) {
         try {
+
+            //만약 이전에 이 수업을 들었고, B0 이상일시. save x
             takeClassService.save(user.getUserId(), classId);
 
             //UserResponseDto userResponseDto=new UserResponseDto(user);
@@ -86,7 +88,12 @@ public class TakeClassController {
 
     @GetMapping("/cancel/{id}")
     public String courseCancel(@PathVariable("id") Long takeId) {
-        takeClassService.delete(takeId);
+        try {
+            takeClassService.delete(takeId);
+        }
+        catch (IllegalArgumentException e) {
+            return "redirect:/myCourses?msg=" + e.getMessage();
+        }
 
         return "redirect:/myCourses?msg=Success!";
     }

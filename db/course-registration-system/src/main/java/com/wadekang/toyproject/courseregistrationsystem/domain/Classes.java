@@ -41,6 +41,9 @@ public class Classes {
     @OneToMany(mappedBy = "classes",orphanRemoval = true) //orphanRemoval = true >> classes 삭제시 관련된 takeclasses 들도 삭제된다.
     private List<TakeClass> takeClasses;
 
+    @OneToMany(mappedBy = "classes",orphanRemoval = true) //orphanRemoval = true >> classes 삭제시 관련된 takeclasses 들도 삭제된다.
+    private List<HopeClass> hopeClasses;
+
 
     //@OneToMany(mappedBy = "classes")
     //private List<ClassTime> classTimes;
@@ -71,7 +74,8 @@ public class Classes {
 
 
     @Builder
-    public Classes(Course course, int classNumber, String professorName, int maxStudentNum, int curStudentNum,Room room) {
+    public Classes(Course course, int classNumber, String professorName, int maxStudentNum, int curStudentNum,Room room
+    ,Long Day, Long startTime, Long endTime) {
         this.course = course;
         this.classNumber = classNumber;
         this.professorName = professorName;
@@ -83,9 +87,9 @@ public class Classes {
         this.takeClasses=new ArrayList<>();
         this.averageScore=0L;
         this.room=room;
-        this.Day=1L;
-        this.startTime=12L;
-        this.endTime=16L;
+        this.Day=Day;
+        this.startTime=startTime;
+        this.endTime=endTime;
 
     }
 

@@ -152,24 +152,25 @@ public class UserController {
     }
 
 
-    @GetMapping("/timetable")
+    @GetMapping("/selectDay")
+    public String selectDay(){
+        return "selectDayPage";
+    }
+
+    @GetMapping("/timetable/{id}")
     public String timetable(@AuthenticationPrincipal User user, Model model,
+                               @PathVariable("id") Long day,  //요일을 파라미터로 받음
                                @RequestParam(value="msg", required = false) String msg) {
         UserResponseDto userResponseDto = userService.findById(user.getUserId());
-
-
-        List<TakeClass> takeClasses = userResponseDto.getTakeClasses();
-
-
-
+       List<TakeClass> takeClasses = takeClassService.findByDay(userResponseDto.getUserId(),day); //해당 요일의 takeclass를 시작시간 순으로 정렬된 값
+       // List<TakeClass> takeClasses = userResponseDto.getTakeClasses();
        // TakeClass takeClass1 = takeClasses.get(0);
        // credits.add(takeClass1.getClasses().getCredits().get(0));
-
         //Credit cc=userResponseDto.getCredits().get(0);
-
         model.addAttribute("username", userResponseDto.getUsername());
-        model.addAttribute("takeClasses", userResponseDto.getTakeClasses());
+        model.addAttribute("takeClasses", takeClasses);
         //model.addAttribute("credits",userResponseDto.getCredits()); //해당 학생이 들은 모든 수업.
+        model.addAttribute("day",day);
         model.addAttribute("msg", msg);
 
         return "timeTable";
@@ -181,8 +182,6 @@ public class UserController {
                                      @RequestParam(value="msg", required = false) String msg) {
 
         List<User> users = userService.findAll();
-
-
         //user 찾기
 
         model.addAttribute("users", users);
