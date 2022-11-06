@@ -20,10 +20,10 @@ public interface TakeClassRepository extends JpaRepository<TakeClass, Long> {
     Optional<Long> findUserAverage(@Param("userId") Long userId); //"userId" 와 Long userId 이름 일치해야!!!!! 디폴트인 99일시 반영 x
 
     @Query("select distinct avg(tc.grade)   from TakeClass tc where tc.grade <> 99L and tc.classes.classId=:classId group by tc.classes.classId  ")
-    Optional<Long > findClassAverage(@Param("classId") Long classId);
+    Long  findClassAverage(@Param("classId") Long classId);
 
     @Query("select distinct avg(tc.user.averageScore)   from TakeClass tc where tc.grade <> 99L and tc.classes.classId=:classId group by tc.classes.classId  ")
-    Optional<Long> findClassUserAverage(@Param("classId") Long classId);
+    Long findClassUserAverage(@Param("classId") Long classId);
 
     //@Query(" select avg(tc.user.averageScore)   from TakeClass tc where tc.grade <> 99L and tc.classes.classId=:classId group by tc.classes.classId  ")
     //Optional<Long []> findClassAverage(@Param("classId") Long classId);

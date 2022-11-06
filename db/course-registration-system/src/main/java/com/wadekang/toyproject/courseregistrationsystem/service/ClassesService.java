@@ -55,15 +55,17 @@ public class ClassesService {
         Classes classes = classesRepository.findById(classId)
                 .orElseThrow(() -> new IllegalArgumentException("Failed: No Class Info"));
 
-        Long  ans1= takeClassRepository.findClassAverage(classId)
-                .orElseThrow(() -> new IllegalArgumentException("Failed: no avgClassScore Info"));
-        Long  ans2= takeClassRepository.findClassUserAverage(classId)
-                .orElseThrow(() -> new IllegalArgumentException("Failed: no avgClassUserScore Info"));
+        Long  ans1= takeClassRepository.findClassAverage(classId);
+               // .orElseThrow(() -> new IllegalArgumentException("Failed: no avgClassScore Info"));
+        Long  ans2= takeClassRepository.findClassUserAverage(classId);
+                //.orElseThrow(() -> new IllegalArgumentException("Failed: no avgClassUserScore Info"));
        // Long ans= avg.getFirst()-avg.getSecond(); //수강한 유저들 개인의 평균학점의 평균 -해당 과목의 평균학점
 
 
-        Long ans=ans2-ans1; //해당 수업 듣는 유저의 평균 학점의 평균 - 해당 수업듣는 유저들의 평균 학점
-        requestDto.setAverageScore(ans);
+        if(ans1!=null && ans2!=null) {
+            Long ans = ans2 - ans1; //해당 수업 듣는 유저의 평균 학점의 평균 - 해당 수업듣는 유저들의 평균 학점
+            requestDto.setAverageScore(ans);
+        }
 
 
         classes.update(requestDto);
