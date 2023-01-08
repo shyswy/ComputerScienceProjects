@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="prob1.prob1Test" tests="3" skipped="0" failures="0" errors="0" timestamp="2022-11-27T06:46:51" hostname="DESKTOP-CA6UGGL" time="2.679">
+  <properties/>
+  <testcase name="encrypt_test()" classname="prob1.prob1Test" time="0.014"/>
+  <testcase name="Decrypt_test()" classname="prob1.prob1Test" time="0.002"/>
+  <testcase name="all_test()" classname="prob1.prob1Test" time="2.662"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
