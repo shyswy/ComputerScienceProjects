@@ -1,4 +1,4 @@
-# READEME
+# README
 
 # multi thread & log-in system
 
