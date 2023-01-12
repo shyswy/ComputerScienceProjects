@@ -1,205 +1,288 @@
 # README
 
-# course-registration-system
+이번 프로젝트에서는 On-disk B+ 트리의 구조를 분석하고 B+트리가 가지는 
 
-Spring Boot 수강신청 웹 사이트 토이 프로젝트
+Modification Overhead를 개선하였습니다.
 
-### Main Page
+# MileStone 1
 
-![Untitled](README/Untitled.png)
+우선 기존 On-disk B+에 대한 구현과 분석입니다.
 
-## ERD
+## Introduction
 
-![erd.drawio (1).png](README/erd.drawio_(1).png)
+B+ 트리는 B트리와 다르게 key 값에 value 값이 붙어 record형식을 취하고, leaf 노드에 실질적인 record들이 들어있고, 모든 record값들이 포함됩니다. 그리고 그 상위의 internal 노드들에는 record가 들어가있는 leaf로 가는 위치를 보여주는 key 값들이 들어있게 됩니다.
 
-### How to Build
+각 key들은 하나의 기준이 되어 해당 key의 왼쪽에는 해당 값보다 작은 값들을, 오른쪽에는 해당 값보다 큰 값들이 존재합니다.
 
-### 1. git clone 
+이러한 형식으로 인해 leaf node 에선 leftmost record의 key 값이 부모 key값과 동일합니다. 아래는 선언된 구조체들입니다.
 
-```
-https://github.com/shyswy/toyproject.git
-```
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled.png)
 
-### 2. Modify application-db.yml (db setting) 
+설명에 앞서 모든 디테일한 설명들은 각 코드 주석에 적어 놓았기에 참고해주시면 됩니다. Record type은 bpt.h에 typedef로 정의되어 있습니다. Key값과 Value 값을 보유 중입니다.
 
-```yaml
-datasource: 
-    driver-class-name: [Driver Name]
-    url: [DB url]
-    username: [username]
-    password: [password]
-```
+각 페이지는 해당 노드가 leaf 인지 확인하는 boalean 타입과, 보유한 (key, 오른쪽 자식)을
 
-### 3. Insert Initial Setting
+각각 Key, offset으로 가지는 I_R이라는 구조체를 저장하는 배열을 보유하는데, 이때 leftmost key의 Left에 위치한 offset 정보가 존재하지 않기에 next_offset에 따로 저장해줍니다.
 
-```sql
-SET SQL_SAFE_UPDATES = 0;
-insert into MAJOR (MAJOR_NAME) values ( 'Computer Science' );
-insert into MAJOR (MAJOR_NAME) values ( 'Mathmatics' );
-insert into MAJOR (MAJOR_NAME) values ( 'law' );
-insert into MAJOR (MAJOR_NAME) values ( 'chemical' );
-insert into MAJOR (MAJOR_NAME) values ( 'physics' );
-insert into MAJOR (MAJOR_NAME) values ( 'economics' );
+## Find
 
-insert into COURSE (COURSE_NAME, MAJOR_ID) VALUES ( 'Java Programming', 1);
-insert into COURSE (COURSE_NAME, MAJOR_ID) VALUES ( 'database', 1);
-insert into COURSE (COURSE_NAME, MAJOR_ID) VALUES ( 'math1',2 );
-insert into COURSE (COURSE_NAME, MAJOR_ID) VALUES ( 'math2', 2);
-insert into COURSE (COURSE_NAME, MAJOR_ID) VALUES ( 'law1', 3);
-insert into COURSE (COURSE_NAME, MAJOR_ID) VALUES ( 'law2', 3);
-insert into COURSE (COURSE_NAME, MAJOR_ID) VALUES ( 'chemical1', 4);
-insert into COURSE (COURSE_NAME, MAJOR_ID) VALUES ( 'chmical2', 4);
-insert into COURSE (COURSE_NAME, MAJOR_ID) VALUES ( 'physic1', 5);
-insert into COURSE (COURSE_NAME, MAJOR_ID) VALUES ( 'physci2', 5);
+- Db_find
 
-insert into ROOM (MAX_PERSON,ROOM_NO,BUILDING_NAME) values ( 30 ,'508','ITBT' );
-insert into ROOM (MAX_PERSON,ROOM_NO,BUILDING_NAME) values ( 10 ,100,'HIT' );
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%201.png)
 
-insert into CLASSES (CLASS_NUMBER, CUR_STUDENT_NUM, MAX_STUDENT_NUM, PROFESSOR_NAME, COURSE_ID,ROOM_ID,DAY,START_TIME,END_TIME,grade_amount) VALUES ( 1, 0, 2, 'KIM', 1,1,1,12,16,3 );
-insert into CLASSES (CLASS_NUMBER, CUR_STUDENT_NUM, MAX_STUDENT_NUM, PROFESSOR_NAME, COURSE_ID,ROOM_ID,DAY,START_TIME,END_TIME,grade_amount) VALUES ( 2, 0, 2, 'LEE', 1,1,2,12,16,3 );
-insert into CLASSES (CLASS_NUMBER, CUR_STUDENT_NUM, MAX_STUDENT_NUM, PROFESSOR_NAME, COURSE_ID,ROOM_ID,DAY,START_TIME,END_TIME,grade_amount) VALUES ( 3, 0, 2, 'KIM', 1,1,3,12,16 ,3);
-insert into CLASSES (CLASS_NUMBER, CUR_STUDENT_NUM, MAX_STUDENT_NUM, PROFESSOR_NAME, COURSE_ID,ROOM_ID,DAY,START_TIME,END_TIME,grade_amount) VALUES ( 4, 0, 2, 'LEE', 1,1,4,12,16 ,3);
-insert into CLASSES (CLASS_NUMBER, CUR_STUDENT_NUM, MAX_STUDENT_NUM, PROFESSOR_NAME, COURSE_ID,ROOM_ID,DAY,START_TIME,END_TIME,grade_amount) VALUES ( 5, 0, 2, 'shy1', 2,1,5,12,16 ,3);
-insert into CLASSES (CLASS_NUMBER, CUR_STUDENT_NUM, MAX_STUDENT_NUM, PROFESSOR_NAME, COURSE_ID,ROOM_ID,DAY,START_TIME,END_TIME,grade_amount) VALUES ( 6, 0, 2, 'shy2', 2,1,6,12,16,3 );
-insert into CLASSES (CLASS_NUMBER, CUR_STUDENT_NUM, MAX_STUDENT_NUM, PROFESSOR_NAME, COURSE_ID,ROOM_ID,DAY,START_TIME,END_TIME,grade_amount) VALUES ( 7, 0, 2, 'KIM2', 3,1,7,12,16 ,2);
-insert into CLASSES (CLASS_NUMBER, CUR_STUDENT_NUM, MAX_STUDENT_NUM, PROFESSOR_NAME, COURSE_ID,ROOM_ID,DAY,START_TIME,END_TIME,grade_amount) VALUES ( 8, 0, 2, 'LEE2', 3,2,1,12,16,2 );
-insert into CLASSES (CLASS_NUMBER, CUR_STUDENT_NUM, MAX_STUDENT_NUM, PROFESSOR_NAME, COURSE_ID,ROOM_ID,DAY,START_TIME,END_TIME,grade_amount) VALUES ( 9, 0, 2, 'KIM3', 4,2,2,10,13,2 );
-insert into CLASSES (CLASS_NUMBER, CUR_STUDENT_NUM, MAX_STUDENT_NUM, PROFESSOR_NAME, COURSE_ID,ROOM_ID,DAY,START_TIME,END_TIME,grade_amount) VALUES ( 10, 0, 2, 'shy3', 4,2,3,12,16,2 );
-insert into CLASSES (CLASS_NUMBER, CUR_STUDENT_NUM, MAX_STUDENT_NUM, PROFESSOR_NAME, COURSE_ID,ROOM_ID,DAY,START_TIME,END_TIME,grade_amount) VALUES ( 11, 0, 5, 'bad', 3,2,6,1,2,3 );
-insert into CLASSES (CLASS_NUMBER, CUR_STUDENT_NUM, MAX_STUDENT_NUM, PROFESSOR_NAME, COURSE_ID,ROOM_ID,DAY,START_TIME,END_TIME,grade_amount) VALUES ( 12, 0, 5, 'good', 4,2,5,1,2,3 );
-insert into CLASSES (CLASS_NUMBER, CUR_STUDENT_NUM, MAX_STUDENT_NUM, PROFESSOR_NAME, COURSE_ID,ROOM_ID,DAY,START_TIME,END_TIME,grade_amount) VALUES ( 11, 0, 5, 'g2', 5,2,4,4,6,2 );
-insert into CLASSES (CLASS_NUMBER, CUR_STUDENT_NUM, MAX_STUDENT_NUM, PROFESSOR_NAME, COURSE_ID,ROOM_ID,DAY,START_TIME,END_TIME,grade_amount) VALUES ( 12, 0, 5, 'b2', 6,2,5,4,6,2 );
-insert into CLASSES (CLASS_NUMBER, CUR_STUDENT_NUM, MAX_STUDENT_NUM, PROFESSOR_NAME, COURSE_ID,ROOM_ID,DAY,START_TIME,END_TIME,grade_amount) VALUES ( 11, 0, 5, 'g2', 7,2,4,6,8,2 );
-insert into CLASSES (CLASS_NUMBER, CUR_STUDENT_NUM, MAX_STUDENT_NUM, PROFESSOR_NAME, COURSE_ID,ROOM_ID,DAY,START_TIME,END_TIME,grade_amount) VALUES ( 12, 0, 5, 'b2', 8,2,5,6,8,2 );
-insert into CLASSES (CLASS_NUMBER, CUR_STUDENT_NUM, MAX_STUDENT_NUM, PROFESSOR_NAME, COURSE_ID,ROOM_ID,DAY,START_TIME,END_TIME,grade_amount) VALUES ( 11, 0, 5, 'g2', 9,2,4,9,10,2 );
-insert into CLASSES (CLASS_NUMBER, CUR_STUDENT_NUM, MAX_STUDENT_NUM, PROFESSOR_NAME, COURSE_ID,ROOM_ID,DAY,START_TIME,END_TIME,grade_amount) VALUES ( 12, 0, 5, 'b2', 1,2,5,9,10,2 );
-```
+해당 key가 존재하는지 찾고 value를 리턴 합니다. 올바르게 찾지못하면 NULL을 리턴합니다.
 
-DB에 해당 SQL 파일을 통해 초기 Course, Room, Classes를 세팅해줍니다.  
+- Find leaf
 
-### 4. Run Application
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%202.png)
 
-![https://user-images.githubusercontent.com/49421226/160833658-37159d1f-346b-4684-a72c-0828dfe32320.png](https://user-images.githubusercontent.com/49421226/160833658-37159d1f-346b-4684-a72c-0828dfe32320.png)
+파라미터로 들어온 key가 위치할 적절한 leaf 노드(page)의 offset을 찾아서 리턴 합니다.
 
-### 5. Set Admin
+## Insert
 
-```sql
-update user set aaaa=1 where user.user_id=1
-```
+- Db_insert
 
-해당 코드를 통해서 해당 유저의 역할을 ‘관리자’ 로 설정해줍니다. 관리자 관련 기능은 해당 유저로 로그인하여 사용 가능합니다.
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%203.png)
 
----
+insert 명령의 기본입니다. Key를 넣을 위치를 찾은 뒤, leaf노드에 key를 추가해줍니다.
 
-### UI
+만약 아직 트리에 아무것도 들어가 있지 않다면, 새로운 root를 생성한 뒤 key, value를 넣고 리턴 하고, 이미 tree에 존재하는 값을 insert하면 안되기에 미리 db_find로 해당 key가 존재하는지 체 크해줍니다. 만약 없다면, find_leaf 함수를 통해 입력 값이 위치할 leaf 노드를 찾습니다.
 
-**홈**
+이 외의 경우엔 2가지 케이스가 존재합니다.
 
-![Untitled](README/Untitled%201.png)
+key가 추가된 노드에서 최대 개수(M) 보다 작아 split이 불필요 하다면 insert_into_leaf를 통해 실 제 insert를 진행합니다.
 
-여러가지 기능을 모아 놓은 Home.html 입니다. 각 버튼을 누를 시, 해당 작업을 수행하는 Controller에 매핑 후, 필요하다면 정보를 처리해준 뒤, 다시 적절한 프론트 페이지(html)을 리턴 해줍니다. 
-맨 아래 관리자 페이지의 경우, 관리자 유저만이 클릭하여 접근 가능합니다.
+만약 최대개수 초과할 시 분할(split)이 발생합니다. 이때는 insert_into_leaf_as 함수로 타고 들어가 게 됩니다.
 
-****
+- Insert_into_leaf
 
-![Untitled](README/Untitled%202.png)
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%204.png)
 
-로그인 페이지의 경우, Home.html 의 login 버튼이나 Spring security 를 사용하여 이동할 수 있습니다. 전자의 경우 home 페이지의 login 버튼을 사용하면 됩니다.
-후자의 경우, 만약 현재 로그인이 되어있지 않은 유저는 Spring Security에서 anonymous User로 분류되어 Home 화면, Login 화면,SignUp 화면을 제외한 화면에 대한 접근권한이 없습니다.
-만약 해당 페이지들에 접근하려는 시도가 발생하면 자동으로 Login 화면으로 매핑되어 login 을 유도합니다. 
-아이디와 비밀번호를 입력 후 로그인을 클릭시 html 에 tymeleaf의 form 에 채워진 정보들이 submit 되며 login을 처리하는 컨트롤러에 Mapping 됩니다. 
-회원가입 버튼을 클릭 시 signup.html 페이지로 이동되며, 취소 버튼 클릭 시 다시 홈 화면으로 이동합니다.
+Split이 필요 없이 단순 insert하는 메소드입니다.
 
-**수강편람**
+값이 위치할 적절한 leaf node를 파라미터로 받았고, 이 leaf 안에서 해당 record가 위치할 위치를 찾은 뒤, insert를 진행합니다. 이후 write을 통해 변경사항을 write 해준 뒤 leaf를 리턴하며 종료 됩니다.
 
-![Untitled](README/Untitled%203.png)
+- Insert_into_leaf_as
 
-수강편람의 경우, 수업조회 버튼을 클릭 시 이동됩니다. 왼쪽의 박스에서 전공을 선택하면 해당 전공에 맞는 과목들이 나타납니다.
-빈 창에 키워드를 검색하면, 해당 키워드가 포함된 과목만 나타나게 됩니다. 
+Split 이 발생하는 insert에 대한 메소드 입니다.
 
-그리고 내가 보고 싶은 과목의 수업 조회 버튼을 클릭 시, 아래 그림과 같이 해당 과목에서 개설된 모든 수업 정보들이 나타나게 됩니다.
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%205.png)
 
-![Untitled](README/Untitled%204.png)
+왼쪽 노드, 중앙 키 값, 오른쪽 노드로 나눈 뒤 중앙 키 값을 부모로 올린 뒤 해당 키의 왼쪽, 오 른쪽에 각각 연결해줍니다. 이때 부모key에 대응하는 값이 leaf에서 사라지게 되므로 모든 leaf를 뒤져보면 모든 record (key,value)를 얻을 수 있어야 한다는 조건이 깨지게 됩니다.
 
-여기서 시간과 요일, 학점에 대한 데이터에 대한 설명을 하고 넘어가겠습니다. 
-세 정보 모두 Long 타입으로 정의하였고, ‘요일’ 의 경우 1L ~ 7L 이 월요일에서 일요일을 나타냅니다.
-시간의 경우, 0~ 48 이 존재하고, 1= 30분 입니다. 즉 24 = 12시 이고, 25 = 12시 30분 입니다.
-Grade도 이와 유사하게 0~8 이 존재하는데, 1= 0.5 학점입니다.  즉 F =0, B0 = 5 , A+ = 8 로 표현됩니다. 이는 float 등의 소수점을 포함한 type 들이 가지는 부동소수점 문제를 염두하여 설계한 것 입니다.
+따라서 split된 inorder successor(오른쪽 자식의 leftmost)에 중앙값을 넣습니다.
 
-**수강신청**
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%206.png)
 
-![Untitled](README/Untitled%205.png)
+Leaf에 대한 작업을 수행하고, split되어 빠진 중앙값을 부모 노드에 넣는 작업을 수행합니다.
 
-Home 페이지에서 수강신청 버튼을 클릭 시 Mapping 됩니다.  희망 추가 버튼을 클릭 시 해당 수업을 희망 수업 리스트에 추가합니다. 
-신청 버튼을 클릭 시 해당 수업을 신청합니다. 
-만약 이미 신청한 내역들 중 이번 학기에 수강하는, 즉 아직 성적이 기입 안된 수업들 중 이미 해당 수업과 똑 같은 과목을 수강했거나, 겹치는 시간대에 수업을 신청하였다면 
-에러 메시지와 함께 수강신청이 되지 않습니다.
+- Insert into parent
 
-**희망수업**
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%207.png)
 
-![Untitled](README/Untitled%206.png)
+여기서부터 재귀적인 특성이 보이기 시작합니다. 부모에게 키를 추가했는데, 그 부모가 또다시 사 이즈 초과로 split되어 부모에 key를 추가하고, 또 추가를 반복하며 root를 타고 갈때까지 재귀적 인 반복이 될 수 있는 코드입니다. 부모에게 중앙값 key를 insert 해주는데, leaf에 추가할 때와 마 찬가지로 split 되거나, 되지 않거나 2가지 케이스로 나누어 insert합니다. 모든 부모 노드들은 leaf 가아닌 internal 노드이기에 insert_into_internal로 split이 발생하지 않고 internal 노드에 넣는 메 소드를 구현하고, insert_into_internal_as로 split 이 발생하며 internal 노드에 insert 하는 케이스를 구현합니다.
 
-희망추가 버튼을 클릭 시 해당 수업이 이곳에 담깁니다. 수강 신청 버튼 클릭 시 수강신청 란에서 수강신청 버튼을 클릭한 것 과 똑 같은 방식으로 수강 신청을 시도하고
-희망 삭제 버튼을 클릭 시 해당 수업을 희망 수업 목록에서 지웁니다.
+- insert_into_internal
 
-**수강기록**
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%208.png)
 
-![Untitled](README/Untitled%207.png)
+부모 노드에 단순 insert를 수행해주면 됩니다.
 
-수강했던 수업들 중, 학점이 기입된, 즉 이수가 완료된 과목들입니다. 
-만약 수강한 과목의 학점이 B0 (5) 보다 낮다면 수강 취소(학점 포기) 가 가능하고, 이후 다시 수강신청 할 수 있게 됩니다. 
-하지만 B0 이상이라면, 수강 취소 버튼 대신 done 이라는 문구가 나타나며, 학점을 포기할 수 없고, 이에 따라 재수강 역시 불가능 하게 됩니다.
+- insert_into_internal_as
 
-**수강 시간표**
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%209.png)
 
-![Untitled](README/Untitled%208.png)
+부모에 중앙값을 insert함으로 또다시 초과가 발생하여 split하는 case를 다룹니다.
 
-Home 화면에서 수강 시간표 버튼을 클릭 시, 요일을 선택할 수 있는 페이지로 이동합니다.
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%2010.png)
 
-해당 요일을 클릭 시, 해당 요일에 들어야 하는 수업들이 시간 순으로 표기 됩니다.
+재귀적으로 다시 parent에 key를 넣는 과정을 요청합니다. 이는 부모에게 중앙값을 insert해도 split이 일어나지 않을 때까지 반복되며 상위로 이동할 것입니다.
 
-시간표 화면은 아래와 같습니다.
+## Delete
 
-![Untitled](README/Untitled%209.png)
+우선 삭제하기 전, 삭제할 키가 없거나, 해당 트리 루트가 비어 있는 경우를 예외처리해 준 뒤, Delete_entry에서 본격적인 삭제를 처리합니다.
 
-‘수강 시간표’ 는 현재 듣고 있는 수업 기준으로 만들어지기에, 학점이 기입된 과목들은 모두 제외 되고, 아직 학점이 기입되지 않은 과목들만 나타납니다.
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%2011.png)
 
-**관리자 홈**
+- Remove_entry_from_page
 
-![Untitled](README/Untitled%2010.png)
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%2012.png)
 
-위 사진은 관리자가 홈 화면에서 관리자 페이지 버튼을 클릭 시 이동하는 화면입니다.
+해당하는 key를 단순히 삭제합니다. 모든 delete는 단순히 key를 지운 뒤, b+ 트리의 조건이 위배 되었다면 tree modification을 수행하는 것으로 진행됩니다.
 
-과목 추가 버튼은 새로운 강의를 신설할 때 사용되고, 과목 삭제 및 수정은 수업 정보( 수강인원)
+- Delete_entry
 
-을 변경하거나 해당 수업을 폐강할 때 사용합니다. 학생 정보는 모든 학생들의 정보를 조회하고, 해당 학생이 수강완료한 수업의 점수를 기입하는 데에 사용됩니다. 
-여기서 수업 점수를 기입하면, 해당과목은 이수완료 된 것으로 처리되게 됩니다.  
-그리고 통계 는 OLAP 으로써 통계자료를 보여줍니다.
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%2013.png)
 
-**수업추가**
+우선 앞서 설명한 remove_ entry_from_page 함수를 통해 key 가 위치한 leaf 가서 단순히 해당 key를 제거합니다.
 
-![Untitled](README/Untitled%2011.png)
+Key를 제거했는데 key최소 개수(m/2 이상) 만족하고, non-leaf(internal) 에 해당 key가 없다면 (leaf의 leafmost에 위치한 key 가 아니다) 단순 삭제가 가능합니다.
 
-수업을 추가하는 곳입니다. Db 안에 들어있는 과목, 교실들 중 하나를 select 한 뒤 수업 정보를 기입하여 수업 추가 버튼을 클릭 시 새로운 수업이 생성됩니다.
+Adjust root는 root에서 구조가 변경할 시 root 구조를 조정하는 메소드입니다.
 
-**폐강 및 수업 정보 수정**
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%2014.png)
 
-![Untitled](README/Untitled%2012.png)
+Key 제거했는데 최소개수(m/2 이상) 만족하지 않을 시에는 두가지 케이스로 나뉩니다.
 
-관리자 페이지에서 수업 정보 수정, 폐강 버튼을 클릭 시 이동합니다. 폐강 버튼 클릭 시 해당 수업이 데이터 베이스에서 사라지고, 정원 변경 시 새로운 정원을 입력하는 페이지로 redirect 되며, 거기서 입력한 정원대로 해당 수업의 최대 인원이 수정됩니다.
+2-1)     이웃 node( 왼쪽 노드)의 key 개수 +삭제된 노드 key 개수가 최대조건(m 이하) 만족시 이웃 트리와 key가 삭제된 트리 merge(coalse) 수행
 
-**학생정보 조회 및 성적 기입**
+2-2)     위조건을 만족하지 않는다면 tree redistribution을 수행합니다. 이는 neighbor 에 게서
 
-![Untitled](README/Untitled%2013.png)
+가장 인접한 key를 빌려오는 과정입니다.
 
-학생 정보 버튼을 클릭 시 해당 학생의 정보가 나타나고, 수업조회 버튼을 클릭 시 해당 학생이 들었던 수업들이 나타납니다.
+- Merge
 
-![Untitled](README/Untitled%2014.png)
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%2015.png)
 
-여기서 점수 변경을 클릭 시 해당 학생의 점수 정보를 변경하고, 이는 곧 점수 기입을 의미하기도 하여 만약 점수가 99(디폴트 값)에서 이외의 값으로 변경되었다면 해당 과목이 이수 완료된 것으로 처리됩니다.
+neighbor 노드(왼쪽 노드)에 key가 삭제된 노드를 merge합니다.
 
-**통계화면(OLAP)**
+단 여기서 주의할 사항이 leftmost의 경우 오른쪽이 neighbor이 되게 예외처리가 되어있기에 이 를 고려하여 구현되었습니다. 이후 부모에서 병합되어 사라진 노드(오른쪽 노드) 를 가르쳤던 key
 
-![Untitled](README/Untitled%2015.png)
+제거합니다.
 
-편차는 과목 평균 – 해당 과목을 수강한 학생들의 평균 학점의 평균 의 값으로, 그 값이 높을수록 학점을 짜게 주는 수업이 되고, 해당 페이지에선 상대적으로 적게 주는 10개의 수업을 순서대로 보여줍니다. 
+케이스는 두가지입니다.
+
+3-1) internal 노드에서 merge 발생. 이때는 neighbor 노드에 부모키를 삽입 하고, 그 뒤에 쭉 key 가 삭제되어 병합될 노드들의 값을 넣어 병합합니다.
+
+3-2) leaf 노드에서 merge 발생. 이때는 병합될 노드( 오른쪽 child) 의 leftmost에 부모키에 해당 하는 값이 존재하기에 부모키를 사이에 끼워줄 필요없이 neighbor노드에 key가 지워진 노드를 결 합해줍니다.
+
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%2016.png)
+
+두개의 노드가 merge되면, 두개 노드의 부모는 1개의 자식을 잃었이기에, 부모에서 사라진 노드의 key를 제거하는 과정을 delete_entry를 재귀적으로 호출하여 수행합니다.
+
+- tree redistribution
+
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%2017.png)
+
+merge를 수행하면 최대 key 개수를 넘어버릴 경우, 형제키를 빌려옵니다. 두가지 케이스로 나뉩니다.
+
+4-1) Internal node에서 발생: 부모key 값을 넘겨주고, 이웃 노드의 인접키를 부모키로 올린다. Leftmost의 경우를 제외하면 부모key 값을 오른쪽 자식의 leftmost에 넘겨주고, 이웃 노드 의 rightmost를 부모키로 올린다.
+
+4-2) Leaf node에서 발생: 이웃에서 가장 인접한 키를 가져와서 넣고, 해당 key를 부모 key에도 넣는다. Leftmost의 경우를 제외하고 말하면 부모키의 key값이 오른쪽 자식의 leftmost에 존재. (leaf의 leftmost는 부모key값) 이웃의 rightmost를 부모키, 맨 앞에 넣어주면 끝. 부 모키에 넣는 건 key만, 맨 앞에 넣는 건 record 값.
+
+단 leftmost의 경우는 neighbor이 오른쪽으로 예외처리 되있습니다. 따라서 좌우를 뒤집어서 그대 로 적용하면 됩니다.
+
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%2018.png)
+
+모든 작업이 완료되면, write하여 변경사항을 저장 후, 리턴 합니다.
+
+## Development
+
+- **Delay merge**
+
+키를 삭제한 뒤에 merge를 최대한 지연시켜 실질적인 merge 작업 수행횟 수를 줄이는 방식입니다. key 가 delete 가 일어났을 때, merge가 필요하더라도 logical하 게 했다고 가정한 뒤, 실질적인 merge는 가능한 미룹니다. search key 등 tree의 값을 가 져와야 하는 경우가 발생할 때까지 실제 delete에 의한 merge를 수행하지 않고, 그 사이 에 key가 지워진 노드가 merge 하지 않아도 될 정도로 insert 되면 해당 트리는 실질적 인 merge를 수행하지 않고 모자란 키를 새롭게 insert받은 키로 채우면 됩니다.하지만 만 약 그전에 search 등 실질적인 트리 접근 요청되어지면, 그 때 미뤄둔 실제 merge를 수 행하여 올바른 값을 받아올 수 있게 합니다. 이를 통하여 실질적인 tree modification 수 행횟수가 줄어들고, 이는 disk I/O 횟수 감소와 직결되어 b+ tree의 overhead를 상당 부분 감소시킬 수 있습니다.
+
+- **cache 메모리**
+
+어떠한 key의 위치에 대한 cache 메모리를 생성하는 것입니다. disk I/O가 발생하면 cache 메모리에 disk에서 가져온 key와 그 위치를 기록하고, 만약 특정 key를 search 하거나 제거할 때, 해당 key의 위치를 cache메모리에서 가져옵니다. 만약 key가 삭제, 변경될 경우, cache 메모리에 변경사항을 반영하고, 만약 cache메모리가 가득 차 공 간을 마련해야하는 경우, LRU를 통하여 가장 재사용 가능성이 낮을 가능성이 높은 정보를 cache 메모리에서 내보냅니다. 이때, 쫓겨난 데이터는 disk에 I/O 되어야 하며 이때 모든 변경사항들을 반영해야 합니다. 이를 통해 실제 disk I/O 횟수를 감소시킬 수 있고, 짧은 시간 내에 한번 find를 수행하여 cache에 위치 정보가 들어있는 key의 경우, find함수를 통해 찾는 과정 없이 바로 위치를 받아올 수 있어 overhead가 감소합니다.
+
+# MileStone 2
+
+Milestone 2 에서는 기존의 B+ 트리 코드에서 Tree Modification 이 발생할 때마다 생기는 Disk I/O 로 인한 overhead들을 개선시키는 방법에 대하여 설명하겠습니다.
+
+## Introduction
+
+기존 B+ 트리는 사전에 정의한 Internal 과 leaf의 최소 key 개수, 최대 key 개수를 기준으로 이를 어긋나는 input 이 들어오는 순간 즉각적으로 split, Merge, redistribution 등의 tree modification 연산이 발생하게 되고, 이는 tree 구조를 변경하므로 disk에 변경된 tree 정보를 기입하거나 받아오며 Disk I/O를 발 생시킵니다. Disk에 필요한 data를 write 하거나, 필요한 data를 read하는 것은 disk의 head를 필 요한 위치까지 옮기는 physical 적인 작업이 필요하고, 이는 in-memory 상황에서의 I/O에 비해 막대한 시간이 소요됩니다. 이러한 Disk I/O를 절감시키기 위한 가장 확실하고 직관적인 방식은 Cache memory 등 in-memory를 활용하여 다시 쓰일 가능성이 높은 data들을 LRU와 같은 방식으 로 선별한 뒤, 불필요한 disk I/O를 줄이는 방법 등이 존재하지만, 이번 Milestone 에서는 이러한 방식을 배제하고 순수하게 B+ 트리 자체의 알고리즘에 대한 개선 사항에 대해서만 작성하겠습니 다.
+
+## Design & Implementation
+
+### Design
+
+저는 B+ 트리의 tree Modification에서 발생하는 disk I/O를 줄이는 방식을 크게 2가지로 분류하였 습니다.
+
+- 1번의 Tree Modification에 발생하는 disk I/O 횟수를 줄이기.
+- Tree Modification 횟수를 최소화하기
+
+먼저 1번 방식, 즉 1번의 Tree Modification에 발생하는 disk I/O 횟수를 줄이기 방식의 경우, 앞서 설명한 Cache memory등을 활용하는 방식이 있으나, 이는 tree 자체에 대한 improvement와는 결 이 다르다고 생각되어 배제했습니다.
+
+따라서 제가 선택한 것은 2번 방식, 즉 문제가 되는 tree Modification 자체의 횟수를 최소화하는 것입니다. 제가 처음 생각한 것은 internal, leaf 노드의 최소 key 개수를 감소시키는 것입니다.
+
+Tree modification 중 key delete 시 발생하는 redistribution과 Merge의 경우, 최소 key 개수 이하 로 내려가게 만드는 delete 연산시에 수행되며, 많은 disk I/O 가 발생합니다.
+
+따라서 최소 key 개수를 감소시킨다면, delete 연산 수행 시 tree modification을 발생시키는 조건 이 완화되어 disk I/O가 감소하게 될 것입니다.
+
+하지만 이 방식의 경우, tree balancing이 자주 발생하지 않게 되고, 결국 tree 높이의 증가로 이어 질 수 있는 tradeoff가 생길 수 있습니다.
+
+따라서 제가 실제로 적용한 방식은 logical delete를 사용하여 Merge 연산을 가능한 delay 시키는 것입니다. 우선 제가 logical delete를 사용할 영역은 오로지 Leaf Node(page)로 국한됩니다.
+
+그 이유는 어차피 모든 실제 insert, delete는 leaf에서 시작해서 그 부모 노드를 타고 올라가며 적 용되기에, 애초에 leaf 부터 logical하게만 지워주고 physical하게 지우지 않는다면, 상위의 internal 노드 안에 존재하는 key들 역시 지워지지 않기 때문입니다.
+
+자세한 설명은 제가 구현한 코드와 함께 이야기해보겠습니다.
+
+### Implementations
+
+우선 기존의 record 구조체에 변경사항이 있습니다. 변경사항은 아래와 같습니다.
+
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%2019.png)
+
+기존의 record에 logical_del이라는 short 타입의 변수가 추가되었는데, 이는 해당 record가 logical 하게는 지워진 상태라는 것을 의미합니다.
+
+아래는 on-disk B+ 트리 코드 중 실제로 leaf에서 해당 key를 가진 record를 지우는 remove_entry_from_page() 함수와 제가 추가한 사항입니다.
+
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%2020.png)
+
+만약 delete 연산을 수행하는 중 해당 delete로 인하여 최소 key 개수 이하의 key를 가지게 되어 tree modification이 필요하다면 해당 key를 보유한 leaf 노드에서 해당 key를 logical 하게만 delete 하고 실제 delete는 수행하지 않습니다.
+
+logical delete의 방식은 record 구조체에 key 와 value 외 logical delete 라는 0 or 1을 가지는 short type을 하나 선언하여 해당 변수가 1이라면 아직 해당 key가 physical 하게 지워지진 않아 여전히 record에 남아있지만 logical 하게 지워진 채 남아 있다는 뜻입니다.
+
+따라서 해당 리코드는 find를 통해 찾아지지 않습니다.
+
+아래는 db_find 내의 변경사항입니다.
+
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%2021.png)
+
+직전에 말했듯이, logical하게 지워진 key들은 아직 tree에 남아있지만, 지워진 key들이기에 find에 서 찾아지면 안 됩니다.
+
+따라서 logical하게 지워진 key를 search하게 될 경우, 해당 key가 없는 것으로 판단하고 NULL을 return하여 찾지 못했다는 것을 표시합니다.
+
+이렇게 logical하개만 지운다면 결국 실제 delete는 전혀 수행되지 않기에 insert 하는 key가 늘어 날수록 delete로 키를 지우더라도 tree의 높이가 점점 증가하고, 각 노드에서 적절한 key를 찾아 다음 노드로 이동하는 search 작업역시 탐색사간이 증가하게 됩니다.
+
+따라서 한 번씩 logical하게 지운 key 들을 실제로 delete하는 작업을 수행해야 하는데, 이를 언제 수행할지가 다음 쟁점이었습니다.
+
+제가 선택한 방식은 insert할 때 실제 delete를 수행하는 것입니다.
+
+아래는 제가 수정한 insert 내부입니다.
+
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%2022.png)
+
+만약 leaf 노드에 어떤 key를 insert할때, 해당 노드가 최대 키 개수를 초과해 가득 차 있다면, 해 당 leaf 노드에서 여태까지 logical하게 지웠던 key들을 모두 찾고, 전부 physical하게 제거합니다.
+
+이를 통해 logical Delete를 수행하더라도, tree modification을 줄이기 위한 logical delete로 인해서 split이라는 새로운 tree modification이 trigger 되지 않습니다.
+
+## Test&Trade-off
+
+제가 구현한 방식은 delete 와 insert 연산이 골고루 발생하는 상황에서 tree modification을 최소 화합니다. 하지만 이에 대한 tradeoff 역시 존재합니다.
+
+만약 delete연산만 계속해서 발생하는 경우, tree는 실제로는 가지고 있을 필요가 없는 데이터를 계속해서 보유하게 되고, 이로 인하여 유효하지 못한 데이터 역시 탐색해야 하기에 특정 key를 find 하는 시간이 감소하며, 이는 insert와 delete 연산의 속도 자체에 영향을 주게 됩니다.
+
+이를 확인하기 위한 test case로 아래와 같은 main 문을 수행해보았습니다.
+
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%2023.png)
+
+이 test에서는 insert와 delete가 한쪽에 치우치지 않고 일정하게 발생하는 case를 확인합니다. Insert와 delete를 1만번씩 순차적으로 실행하고, 이를 10번 반복하였습니다.
+
+제가 적용한 improvement는 delete에 비중이 지나치게 많다면 tree가 축소되지 않아 속도가 느려 지는 문제가 발생하는데, 이 test와 같이 insert 와 delete가 균등하게 반복될 경우는 insert에서 logical하게 지워진 값들을 그때 그때 physical하게 지워주기에 이런 문제없이 향상된 결과가 나오 게 됩니다.
+
+![Untitled](README%205698876370d149a38d4f2c8a31cbbbd1/Untitled%2024.png)
+
+위 사진은 해당 main문을 time을 통해 시간을 측정한 값입니다. 왼쪽이 기존의 on-disk b+ 트리 코드이고, 오른쪽은 제가 향상시킨 on-disk b+트리 코드입니다.
+
+위 결과에서 알 수 있듯이, 제가 구현한 improvement는 확실히 insert와 delete가 한쪽으로 치우 치지 않는 상황에선 성능 향상이 확인되었습니다. 왼쪽은 3분 53.737초 정도로 확인되었는데 반 하여 오른쪽은 2분 17.634초로 약 1분 30초, 혹은 1.6배 정도 성능이 향상되었습니다.
+
+하지만 만약 delete 연산만 계속해서 수행해야하는 케이스의 경우, 기존의 코드가 제가 향상시킨 코드에 비해 뛰어난 성능을 보여주는 것을 확인하며 제가 작성한 코드의 tradeoff를 체크할 수 있
+
+었습니다.
+
+마지막으로 제가 수행한 improvement를 요약하자면 delete애서 tree Modification이 발생할 때는 logical하게 delete하고, 이렇게 logical 하게만 지워진 값들이 insert에서 split을 야기하게 한다면 실제로 제거하는 방식의 improvement를 적용하였습니다.
+
+## Trouble shooting
+
+우선 제가 처음 겪었이던 trouble은 Cache memory에 관한 내용입니다. 처음엔 단순히 disk I/O자체 를 줄이는 최적의 방법이 Cache memory였기에 이를 사용하려 했지만, 이는 B+ tree에 대한 이해 도와 무관한, 별개의 방식이었이기에 새로운 방식을 적용하였습니다.
+
+추가로 제가 겪었이던 가장 큰 문제는 바로 성능 향상에 대한 문제점이었습니다.
+
+제가 생각한 improvement의 방식은 여러가지가 있었이지만, 어느 한쪽을 improve 시키면 반드시 그에 따른 tradeoff가 확인되어 완벽한 improvement를 찾는 것에 어려움이 있었습니다.
+
+하지만 방법을 연구하던 중, B+ 트리라는 정체성 속에서 B+트리 자체에서 개선점을 찾는 다면, 어떠한 예외 상황 없이 모든 상황에서 더욱 뛰어난 완벽한 상위호환의 버전을 완성하는 것은 불 가능하다는 생각을 하였습니다.
+
+이에 따라 제가 생각한 방법들의 Pros & Cons를 모두 정리하였고, 어떤 방식의 개선점이 상대적 으로 적은 risk로 큰 return을 얻을 수 있는지 생각해보며 문제를 해결할 수 있었습니다.
