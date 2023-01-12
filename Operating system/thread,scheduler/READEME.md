@@ -1,4 +1,4 @@
-# READEME-OS M3,4
+# READEME
 
 # multi thread & log-in system
 
@@ -14,7 +14,7 @@ lwp(light-weight-process)는 서로 독립적으로 실행되고 자원을 공�
 
 아래 사진은 proc.h입니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled.png)
 
 추가된 인스턴스들은 기존 process 구조체에 thread의 특성을 더해주고, 이러한 thread들을 묶어 서 관리하는 process(master)와 구분하여 관리되도록 만들어주었습니다.
 
@@ -32,7 +32,7 @@ thread를 생성할 때 만약 empty_mem이 비어있다면, 크기를 증가시
 
 아래 사진은 thread_creat함수의 일부분입니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%201.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%201.png)
 
 이 함수는 기존 xv6의 fork() 함수와 마찬가지로 thread(process)를 생성해주는 함수입니다. 구현은 상당부분을 기존 xv6의 fork함수를 참고하여 구현하였습니다.
 
@@ -46,7 +46,7 @@ thread의 주소를 process(master) 의 메모리에 추가해주게 됩니다. 
 
 2) thread_exit
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%202.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%202.png)
 
 해당 함수는 thread의 eixt()을 구현한 함수로, 이 역시 기존 exit() 함수를 참조하여 작성하였
 
@@ -58,7 +58,7 @@ thread의 주소를 process(master) 의 메모리에 추가해주게 됩니다. 
 
 3) thread_join
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%203.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%203.png)
 
 argument로 지정한 thread가 종료되기를 대기한 뒤, 반환값을 받아옵니다. 또한 스레드가 종료된 뒤, 스레드에 할당된 자원들을 회수하고 정리합니다.
 
@@ -84,7 +84,7 @@ fork()함수 또한 몇가지 수정사항이 존재합니다.
 
 thread를 구현함에있어 기존의 proc 구조체를 사용하여 구현하였기에, fork()함수 역시 간단하게 수정해주었습니다. 메모리 영역의 관리를 제외하곤 각각의 thread가 proc구조체를 통하여 개별적 인 process처럼 동작하기에 thread들을 총괄하는 process가 보유한 정보를 가지고 동작하게끔 변 경해주었습니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%204.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%204.png)
 
 위 사진과 같이 fork함수가 master가 가지고있는 size 정보를 가지고 동작하도록 수정하였습니다.
 
@@ -92,13 +92,13 @@ growproc:
 
 growproc역시 변경점이 존재합니다. 메모리 영역의 관리는 master가 가지고 있는 정보로 동작하 도록 아래 사진과 같이 수정하였습니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%205.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%205.png)
 
 exit:
 
 exit함수에서의 변경점에 대해 설명하겠습니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%206.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%206.png)
 
 exit함수에선 이전에 구현하지 않고 넘어갔던 master가 속한 thread들을 모두 제거하는 역할을 추 가적으로 수행합니다.
 
@@ -110,7 +110,7 @@ exit함수에선 이전에 구현하지 않고 넘어갔던 master가 속한 thr
 
 1) thread_test
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%207.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%207.png)
 
 - **test1**
 
@@ -126,7 +126,7 @@ thread가 메모리를 할당받은 뒤 다른 스레드들이 접근하는 것�
 
 2) thread_execute
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%208.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%208.png)
 
 thread에서 exec의 동작을 확인합니다. 생성된 thread가 올바르게 hello_thread 프로그램을 실행한 것을 확인할 수 있습니다.
 
@@ -134,13 +134,13 @@ thread에서 exec의 동작을 확인합니다. 생성된 thread가 올바르게
 
 3) thread_exit
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%209.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%209.png)
 
 thread에서 exit의 동작을 체크하였습니다. thread에서 exit이 호출되면서 해당 thread가 속해있는 프로세스의 다른 thread들 역시 모두 종료됩니다. exiting 출력이후 곧바로 쉘로 빠져나가집니다.
 
 4) thread_kill
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2010.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2010.png)
 
 process가 kill 되었을 떄, 그 프로세서 내의 모든 스레드가 종료되는지 확인합니다.
 
@@ -160,13 +160,13 @@ xv6 내에서 처음 건드려보는 파트이기도 하였고, 제가 지난과
 
 우선 기본적인 login 시스템을 만들기에 앞서 기존의 xv6의 부팅 시스템을 분석하였습니다. Init.c 에서 sh.c 를 실행하여 부팅을 시작하게 되는데, 이 과정에서 sh.c 이전에 login.c 를 먼저 실행하 여 로그인을 한 뒤에, sh.c 를 실행하는 것으로 login에 대하여 구현하였습니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2011.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2011.png)
 
 위 사진은 init.c의 main문입니다. 위와 같이 sh.c 가 실행되어야할 위치에 login.c 를 exec하 도록 구현하였습니다. 이후에 login.c에서 로그인이 인증되면, 그곳에서 sh.c. 를 exec하게 됩 니다. 또한 추가된 유저들은 userS라는 유저들의 정보를 모아둔 파일에 아이디와 비밀번호가 저장되어, 로그인 할때마다 해당 파일을 참조하여 로그인 정보를 인증 한 뒤, 실행됩니다.
 
 이를 통하여 xv6가 재부팅 되더라도, 새롭게 make가 되지 않는다면 기존에 addUser함수로 추가한 유저정보나, deleteUser을 통해 삭제한 유저정보는 시스템 상에 유지됩니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2012.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2012.png)
 
 위 사진은 fs.c 에 선언한 user 구조체입니다. Priv는 유저의 개인정보( id, passward) 를 가져오 는 배열로, 3차원 배열로 선언해주었고 [유저수] [아이디 or 비밀번호] [char 배열] 의 정보를
 
@@ -174,7 +174,7 @@ xv6 내에서 처음 건드려보는 파트이기도 하였고, 제가 지난과
 
 Myopen, addUser, deleteUser과 같은 함수들은 sys_ 함수에서 일차적인 과정들을 수행 후 fs.c 에 존재하는 함수로 넘어오게 되는데, 이때 userS에서 유저정보를 로드한 뒤, 넘어오게 됩니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2013.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2013.png)
 
 위 사진과 같이 sys_ 함수 내에서 give_userS 를 통하여 유저 정보를 로드 시킨 뒤, 함수를 수행함으로써 기존의 유저정보를 통한 작업 수행이 가능해집니다.
 
@@ -182,17 +182,17 @@ Myopen, addUser, deleteUser과 같은 함수들은 sys_ 함수에서 일차적�
 
 최초 시스템을 구축하는 system call 입니다. 만약 이전에 작업하던 정보가 있다면 불러오 고, 아무런 정보가 없다면 root 정보를 생성하는 등 최초의 login system의 전반적인 영 역을 담당합니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2014.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2014.png)
 
 위 사진은 sys_open 함수의 일부분입니다. Xv6에 구현되어있는 namei함수를 통하여
 
 userS의 정보를 불러옵니다. 만약 정보가 없다면 (최초 부팅 시가 이 경우에 해당합니다.) create을 통하여 file을 만들고 root 정보를 넣어줍니다. Sys_adduser, sys_deleteuser 함수 역시 위와같이 namei를 통하여 기존에 추가된 정보와 대조한 뒤, 동작하는 방식으로 선처리를 해 준 뒤, 진행하였습니다. 또한 유저는 자신의 디렉토리를 가지기에, sys_addUser에선 유저 생성 시 해당 유저의 디렉토리를 아래와 같이 생성해줍니다.( 해당 디렉토리의 owner는 유저 자신 으로 설정해줍니다). 과제명세에 deleteuser는 별도의 처리를 하지 않는다고 명시되어있기 때 문에 별도로 deleteuser를 통하여 삭제되는 유저의 디렉토리를 제거하거나 하지는 않습니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2015.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2015.png)
 
 fs.c에선, sys_함수에서 받아온 유저정보들을 토대로 들어온 명령들을 수행하게 됩니다. 아래 사진은 매 부팅시 마다 initialize해주는 myopen 함수입니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2016.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2016.png)
 
 위에서 설명했듯이, give_userS함수를 통하여 전역으로 선언된 inode 구조체인 userS에
 
@@ -200,7 +200,7 @@ fs.c에선, sys_함수에서 받아온 유저정보들을 토대로 들어온 �
 
 아래 사진은 addUser 함수입니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2017.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2017.png)
 
 Find_empty() 함수는 단순히 priv 배열을 search하여 처음으로 찾아진 빈공간의 index를 리턴 해주는 함수입니다. 만약 빈공간이 없으면 -1을 리턴해주게됩니다. Add를 할 수 없는 예외사 항들을 체크해준 뒤, priv 배열에 추가할 유저 정보들을 strncpy 함수를 통하여 저장합니다.
 
@@ -208,19 +208,19 @@ Find_empty() 함수는 단순히 priv 배열을 search하여 처음으로 찾아
 
 아래 사진은 deleteUser 함수 입니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2018.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2018.png)
 
 먼저 root를 지우려고 한다면 , return -1 통해 요청을 거부해줍니다.
 
 그리고 cmp 함수를 통하여 내가 지우려는 유저가 존재하는지 find를 해준 뒤, Memset을 통하여 해당 유저의 정보들을 전부 ‘x’ 로 초기화 해줍니다. 그리고 Update 함수를 통하여 정보를 반영한 뒤, user의 수를 1 감소시킵니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2019.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2019.png)
 
 위 사진과 같이 기존에 존재하는 유저가 입력으로 들어온 경우 search에 성공하여 delete해 줍니다.
 
 아래 사진은 update 함수입니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2020.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2020.png)
 
 이 함수는 adduser, deleteuser, myopen 함수의 helper function으로써, 변경된 유저정보를
 
@@ -228,13 +228,13 @@ Find_empty() 함수는 단순히 priv 배열을 search하여 처음으로 찾아
 
 제가 설명한 것처럼 adduser, deleteuser 를 통하여 변경한 유저정보가 올바르게 상호작용하 는지 확인하기 위하여 최초 로그인시 ‘a’ ‘b’ 유저를 adduser을 통해 생성 한 뒤, deleteuser을 통해 a 유저만 제거한 뒤, 재부팅 뒤에 로그인 시도를 해보았습니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2021.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2021.png)
 
 위 사진과 같이, 삭제된 a 유저는 그러한 유저가 없다는 문구가 뜨고, 추가된 b유저는 재부팅 되었음에도 올바르게 정보가 유지되어 로그인이 성공한 모습입니다.
 
 지금까지는 유저정보의 수정에 관련된 fs.c 함수들이었고, 이제 이 정보를 토대로 동작하는 login, logout 함수에 대하여 설명하겠습니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2022.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2022.png)
 
 login에선, login.c로부터 입력된 로그인 정보(유저 정보) 를 받아오고, 해당 유저가 존재하는지
 
@@ -242,11 +242,11 @@ priv 배열을 돌며 serach합니다. 만약 존재한다면, ‘현재 사용�
 
 아래 사진들은 로그인과 관련된 몇가지 테스트 입니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2023.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2023.png)
 
 Root의 최초 비밀번호는 0000으로 설정되었기 때문에 올바르지 않은 비밀번호 입력시에 login에 실패합니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2024.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2024.png)
 
 이전에 a~I 의 이름을 가진 9명을 유저를 addUser을 통해 추가하여 root포함 10명의 유저가 등록되어있기 때문에 이후의 add는 fail합니다.
 
@@ -268,7 +268,7 @@ file의 경우 최초에 MODE_RUSR|MODE_WUSR | MODE_ROTH 의 권한을 부여받
 
 저는 이러한 권한을 체크하기 위해 get_modeBit 함수를 구현하였습니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2025.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2025.png)
 
 인자로 들어오는 ip는 inode를 통해 받아온 file 정보이고, 뒤에 추가로오는 own_mode, oth_mode 는 각각 ip와 현재 유저의 관계를 분석하여 만약 owner 라면 owner에 대한 권한 bit를, other 이라면 other에 대한 권한 비트를 리턴합니다. 예를 들어 execute를 하기 위한 권한 체크를 하고 싶다면, 인자로 실행할 파일 혹은 디렉토리를 ip 로, MODE_XUSR( owner의 실행)를 own_mode 로, MODE_XOTH(other의 실행) 을 oth_mode 인자로 받고 됩니다.
 
@@ -278,13 +278,13 @@ file의 경우 최초에 MODE_RUSR|MODE_WUSR | MODE_ROTH 의 권한을 부여받
 
 이 함수를 통해 권한 체크를 한 파트는 과제명세에 나온대로 namex, exec,create, sys_open, sys_chdir, sys_unlink 입니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2026.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2026.png)
 
 위 사진과 같이, 체크하고 싶은 파트에서 내가 필요한 비트를 extract 해준 뒤, 만약 1이라면 권한이 존재하는 것이므로 그대로 continue하고, 만약 0이라면 종료해줍니다.
 
 아래 사진은 권한을 변경해주는 chmod 함수입니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2027.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2027.png)
 
 Chmod가 가능한 곳은 root 혹은 mod를 바꿀 대상의 owner만 가능하기에 만약 둘 모두에 해당 되지 않는다면, chmod가 fail됩니다. 그리고 permission을 입력으로 들어온 mode로 변 경을 해줌으로써 대상의 권한을 변경해주게 됩니다.
 
@@ -292,15 +292,15 @@ Chmod가 가능한 곳은 root 혹은 mod를 바꿀 대상의 owner만 가능하
 
 우선 ls 결과창입니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2028.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2028.png)
 
 유저정보가 저장되어있는 userS는 root를 owner로 가지는 최초의 파일시스템에 의해 생성된 파일로, 최초의 권한은 owner인 root만이 read, write 가능합니다. 이 파일을 가지고 권한 테 스트를 진행해보았습니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2029.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2029.png)
 
 위와같이 tst 유저를 추가해준뒤 해당 유저로 로그인 후 userS를 cat하면, 해당 파일을 read( open 에서) 할 수 없다는 문구와 함께 cat에 실패합니다. 이는 최초에 userS의 권한 설 정이 other가 read 할 수 없게 설정되었기 때문입니다.
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2030.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2030.png)
 
 하지만 위와 같이 other에도 모든 권한을 허용해주면, userS 파일에게 other로 인식되는 a유 저도 해당 파일을 읽어들일 수 있게 됩니다. userS 의 내용에 대해 간략이 설명하면
 
@@ -308,7 +308,7 @@ User1xpasswardxUser2xpassward 처럼 ‘x’ (디폴트 값)를 통하여 각 �
 
 ### 1-3) Ls modification
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2031.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2031.png)
 
 ls에서   drwxrwx 와 같이 파일인지 directory인지, 그리고 owner과 other에 대한 read write execute 권한을 표시해주도록 ls.c 를 변경해주었습니다. Permission 배열에 기본적으로
 
@@ -320,7 +320,7 @@ drwxrwx의 값을 세팅해주고, 주어진 파일에 따라 값을 변경해�
 
 Ls가 올바르게 권한을 표시하나 확인을 하기위해, chmod 를 통해 userS의 권한을 변경한 뒤, ls 명령어를 수행해보겠습니다.( 원래의 ls 결과는 앞의 chmod 사진을 참고해주세요.)
 
-![Untitled](READEME-OS%20M3,4%208f9d26ad953a4230abf9a07343679c19/Untitled%2032.png)
+![Untitled](READEME%208f9d26ad953a4230abf9a07343679c19/Untitled%2032.png)
 
 53 은    owner의 bit 값이 5 즉 101 을 의미하는 것이고, 이는 read, execute권한이 존재한 다는 것을 의미합니다. 그리고 뒤의 3은 other의 권한이 011, 즉 write, execute권한이 있다는 것을 의미합니다. 또한 userS 는 파일이기에 맨앞에 ‘-‘로 T_file(파일) 임을 명시하기에
 
