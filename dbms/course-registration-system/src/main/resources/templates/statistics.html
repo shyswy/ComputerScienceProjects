@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"/>
+<title>통계자료</title>
+<head>
+
+</head>
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <div>
+
+        <table class="table table-striped text-center">
+            <thead>
+            <tr>
+                <th>클래스 id</th>
+
+                <th>과목명</th>
+                <th>교수명</th>
+                <th>편차</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="class: ${topTen}">
+                <td th:text="${class.classId}"></td>
+                <td th:text="${class.course.courseName}"></td>
+                <td th:text="${class.professorName}"></td>
+                <td th:text="${class.averageScore}"></td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+    <div th:replace="fragments/footer :: footer"/>
+</div> <!-- /container -->
+</body>
+</html>
