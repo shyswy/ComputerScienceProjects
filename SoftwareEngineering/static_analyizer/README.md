@@ -1,6 +1,6 @@
 # README
 
-이번 문서에서는 mete의 static analyze tool인 clang을 사용한 static analyze를 통해 3개의
+이번 문서에서는 meta의 static analyze tool인 clang을 사용한 static analyze를 통해 3개의
 
 Task 코드를 분석하고, 그들의 True positive, False positive, False negative를 확인해보고, 이들의 의 미와 이유에 대해 분석해보겠습니다.
 
